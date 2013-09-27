@@ -1,0 +1,14 @@
+*~
+*.o
+*.log
+*.directory
+*.class
+*.jar
+*.war
+*.ear
+*/bin
+*/gen
+*/target
+*/war
+*/gwt-unitCache
+*.settings
