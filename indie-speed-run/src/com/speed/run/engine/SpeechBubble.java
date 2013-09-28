@@ -1,9 +1,8 @@
 package com.speed.run.engine;
 
-import com.badlogic.gdx.graphics.g2d.Animation;
 import com.badlogic.gdx.graphics.g2d.BitmapFont;
-import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.graphics.g2d.BitmapFont.HAlignment;
+import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.math.MathUtils;
 import com.speed.run.Player;
 import com.speed.run.managers.Assets;
@@ -14,34 +13,35 @@ public class SpeechBubble extends Entity {
 	protected BitmapFont font;
 	protected String text;
 	protected String displayedText;
-	protected boolean display;
 	protected float padding = 0.8f;
 	protected float time = 0;
 	protected static String far = "...";
 	protected float factor;
+	
+	protected boolean display;
 	
 	public SpeechBubble() {
 		super();
 		init();
 	}
 
-	public SpeechBubble(Animation anim) {
-		super(anim);
-		init();
-	}
-
 	public void init() {
-		animation = Assets.getInstance().getAnimation("bubble");
+		animations.put("bubble", Assets.getInstance().getAnimation("bubble"));
+		animation = animations.get("bubble");
 		font = Assets.getInstance().getFont("bubble");
-		display = true;
-		setText("I'm a stupid NPC. Where am I? What am I doing?");
+		display = false;
 		factor = 0;
 	}
 	
 	public void setText(String newText) {
 		text = newText;
+		display = true;
+	}
+	
+	public void hide() {
 		time = 0;
 		displayedText = "";
+		display = false;
 	}
 
 	public void update(float dt) {
@@ -63,6 +63,7 @@ public class SpeechBubble extends Entity {
 
 	@Override
 	public void draw(SpriteBatch batch) {
+		if (!display) return;
 		super.draw(batch);
 		font.setScale(factor);
 		font.drawWrapped(batch, displayedText, pos.x - (animSize.x * padding) / 2, pos.y

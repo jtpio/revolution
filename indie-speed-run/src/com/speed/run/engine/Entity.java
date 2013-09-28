@@ -1,5 +1,7 @@
 package com.speed.run.engine;
 
+import java.util.HashMap;
+
 import com.badlogic.gdx.graphics.g2d.Animation;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
@@ -8,27 +10,31 @@ import com.badlogic.gdx.math.Vector2;
 public class Entity implements Drawable {
 	protected Vector2 pos;
 	protected Animation animation;
+	protected HashMap<String, Animation> animations;
 	protected float stateTime;
 	protected Vector2 animSize;
+	protected boolean left;
 	
 	public Entity() {
 		Init();
 	}
 	
-	public Entity(Animation anim) {
-		Init();
-		setAnimation(anim);
-	}
-	
 	private void Init() {
 		pos = new Vector2();
 		animSize = new Vector2();
+		animations = new HashMap<String, Animation>();
 		stateTime = 0;
+		left = false;
 	}
 	
-	public void setAnimation(Animation anim) {
-		animation = anim;
+	public void setAnimation(String animName) {
+		if (!animations.containsKey(animName)) return;
+		animation = animations.get(animName);
 		animSize.set(animation.getKeyFrame(0).getRegionWidth(), animation.getKeyFrame(0).getRegionHeight());
+	}
+	
+	public void addAnimation(String animName, Animation a) {
+		animations.put(animName, a);
 	}
 	
 	public void scale(float factor) {

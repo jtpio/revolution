@@ -1,5 +1,7 @@
 package com.speed.run;
 
-public class Inventory {
 
+public class Inventory {
+	
+	
 }

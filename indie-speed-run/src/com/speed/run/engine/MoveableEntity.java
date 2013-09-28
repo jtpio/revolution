@@ -4,7 +4,7 @@ import com.badlogic.gdx.graphics.g2d.Animation;
 import com.badlogic.gdx.math.Vector2;
 import com.speed.run.managers.Config;
 
-public class MoveableEntity extends Entity {
+public class MoveableEntity extends Entity implements OnMoveComplete {
 
 	protected Vector2 target;
 	protected float speed;
@@ -13,11 +13,6 @@ public class MoveableEntity extends Entity {
 	
 	public MoveableEntity() {
 		super();
-		init();
-	}
-	
-	public MoveableEntity(Animation anim) {
-		super(anim);
 		init();
 	}
 	
@@ -42,6 +37,14 @@ public class MoveableEntity extends Entity {
 		if (pos.dst2(target) > Config.DIST_EPSI) {			
 			delta.set(target.x - pos.x, target.y - pos.y).nor();
 			pos.add(delta.x * speed, delta.y * speed);
+		} else {
+			setIdleAnimation();
 		}
+	}
+
+	@Override
+	public void setIdleAnimation() {
+		if (left) setAnimation("idleLeft");
+		else setAnimation("idleRight");
 	}
 }

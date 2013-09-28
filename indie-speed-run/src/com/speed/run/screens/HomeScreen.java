@@ -8,8 +8,6 @@ public class HomeScreen extends BaseScreen {
 	
 	public HomeScreen(IndieSpeedRun game) {
 		super(game);
-		//sprite = Assets.getInstance().getSprite("potato");
-		//sprite.setPosition(0, 0);
 	}
 
 	@Override

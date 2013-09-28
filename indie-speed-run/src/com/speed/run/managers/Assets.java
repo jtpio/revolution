@@ -8,6 +8,7 @@ import com.badlogic.gdx.audio.Music;
 import com.badlogic.gdx.audio.Sound;
 import com.badlogic.gdx.graphics.g2d.Animation;
 import com.badlogic.gdx.graphics.g2d.BitmapFont;
+import com.badlogic.gdx.graphics.g2d.Sprite;
 import com.badlogic.gdx.graphics.g2d.TextureAtlas;
 
 public class Assets {
@@ -23,6 +24,7 @@ public class Assets {
 		return instance;
 	}
 	
+	HashMap<String, Sprite> sprites = new HashMap<String, Sprite>();
 	HashMap<String, Animation> animations = new HashMap<String, Animation>();
 	HashMap<String, Sound> sounds = new HashMap<String, Sound>();
 	HashMap<String, Music> musics = new HashMap<String, Music>();
@@ -36,7 +38,10 @@ public class Assets {
 		TextureAtlas atlas = assetManager.get("data/spritesheet.txt", TextureAtlas.class);
 
 		// player
-		animations.put("player", new Animation(0.5f, atlas.findRegions("player")));
+		animations.put("playerIdleLeft", new Animation(0.2f, atlas.findRegions("playerIdleLeft")));
+		animations.put("playerIdleRight", new Animation(0.2f, atlas.findRegions("playerIdleRight")));
+		animations.put("playerWalkLeft", new Animation(Config.WALKING_SPEED, atlas.findRegions("playerWalkLeft"), Animation.LOOP));
+		animations.put("playerWalkRight", new Animation(Config.WALKING_SPEED, atlas.findRegions("playerWalkRight"), Animation.LOOP));
 		animations.put("npc0", new Animation(0.5f, atlas.findRegions("npc0")));
 		animations.put("bubble", new Animation(0.5f, atlas.findRegions("bubble")));
 		// background
@@ -53,6 +58,15 @@ public class Assets {
 			return animations.get(animName);
 		} else {
 			Gdx.app.error(TAG, "Animation " + animName + " does not exist!");
+			return null;
+		}
+	}
+	
+	public Sprite getSprites(String spriteName) {
+		if (sprites.containsKey(spriteName)) {
+			return sprites.get(spriteName);
+		} else {
+			Gdx.app.error(TAG, "Sprite " + spriteName + " does not exist!");
 			return null;
 		}
 	}
