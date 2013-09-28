@@ -3,21 +3,21 @@ package com.speed.run;
 import com.badlogic.gdx.Game;
 import com.badlogic.gdx.Screen;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
+import com.speed.run.screens.BusStopScreen;
 import com.speed.run.screens.HomeScreen;
 import com.speed.run.screens.SplashScreen;
 
 public class IndieSpeedRun extends Game {
 	
-	public static final int WIDTH = 1200;
-	public static final int HEIGHT = 720;
-	
 	// screens
 	private HomeScreen homeScreen;
+	private BusStopScreen busStopScreen;
 	
 	private SpriteBatch batch;
 	
 	public void createScreens() {
 		if (homeScreen == null) homeScreen = new HomeScreen(this);
+		if (busStopScreen == null) busStopScreen = new BusStopScreen(this);
 	}
 	
 	@Override
@@ -48,6 +48,10 @@ public class IndieSpeedRun extends Game {
 	
 	public Screen getHomeScreen() {
 		return homeScreen;
+	}
+	
+	public Screen getBusStopScreen() {
+		return busStopScreen;
 	}
 }
 
