@@ -15,9 +15,9 @@ import com.badlogic.gdx.scenes.scene2d.ui.CheckBox.CheckBoxStyle;
 import com.badlogic.gdx.scenes.scene2d.ui.Label.LabelStyle;
 import com.badlogic.gdx.scenes.scene2d.ui.Skin;
 import com.badlogic.gdx.scenes.scene2d.utils.ChangeListener;
-import com.badlogic.gdx.scenes.scene2d.utils.ChangeListener.ChangeEvent;
 import com.speed.run.IndieSpeedRun;
 import com.speed.run.Player;
+import com.speed.run.State;
 import com.speed.run.engine.Entity;
 import com.speed.run.managers.Assets;
 import com.speed.run.managers.Config;
@@ -28,6 +28,8 @@ public class BusStopScreen extends BaseScreen {
 	protected Entity background;
 	protected BitmapFont font;
 	protected NpcManager npcManager;
+	
+	protected boolean pause = false;
 	
 	public BusStopScreen(IndieSpeedRun game) {
 		super(game);
@@ -67,7 +69,8 @@ public class BusStopScreen extends BaseScreen {
 			@Override
 			public void changed(ChangeEvent event, Actor actor) {
 				boolean enabled = ipod.isChecked();
-				System.out.println(enabled);
+				Player.getInstance().setMusicMode(enabled);
+				pause = !pause;
 			}
 		});
 		
@@ -125,21 +128,27 @@ public class BusStopScreen extends BaseScreen {
 		Gdx.gl.glClearColor(1f, 1f, 1f, 1);
 		Gdx.gl.glClear(GL10.GL_COLOR_BUFFER_BIT);
 		
-		// process input
-		input();
-		
-		// updates
-		Player.getInstance().update(delta);
-		//camera.position.set(Player.getInstance().getPos().x, Player.getInstance().getPos().y, 0);
-		npcManager.update(delta);
-		//camera.translate(0, 1);
-		camera.update();
+		if (!pause) {
+			// process input
+			input();
+			
+			// updates
+			Player.getInstance().update(delta);
+			//camera.position.set(Player.getInstance().getPos().x, Player.getInstance().getPos().y, 0);
+			npcManager.update(delta);
+			//camera.translate(0, 1);
+			camera.update();
+		}
 		
 		// rendering
 		batch.setProjectionMatrix(camera.combined);
 		batch.begin();
+		
+		float colorCmpt = pause?0.5f:1.0f;
+		batch.setColor(colorCmpt, colorCmpt, colorCmpt, 1f);
 		background.draw(batch);
 		npcManager.render(batch);
+		batch.setColor(1.0f, 1.0f, 1.0f, 1f);
 		Player.getInstance().draw(batch);
 	/*	font.draw(batch, Strings.WAITING_TIME,
 				-150 -font.getBounds(Strings.WAITING_TIME).width / 2,

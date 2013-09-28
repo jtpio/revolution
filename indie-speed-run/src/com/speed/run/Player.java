@@ -37,5 +37,9 @@ public class Player extends MoveableEntity {
 	public void update(float dt) {
 		super.update(dt);
 	}
+	
+	public void setMusicMode(boolean mode) {
+		
+	}
 
 }
