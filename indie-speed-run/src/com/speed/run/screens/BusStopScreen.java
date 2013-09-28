@@ -40,6 +40,9 @@ public class BusStopScreen extends BaseScreen {
 		npcManager = new NpcManager();
 
 		setupUI();
+		
+		// start music
+		Assets.getInstance().getMusic("mainTheme").play();
 	}
 	
 	private void setupUI() {

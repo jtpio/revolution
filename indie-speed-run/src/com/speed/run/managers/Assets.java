@@ -32,10 +32,10 @@ public class Assets {
 	
 	public void loadAssets(AssetManager assetManager) {
 		// fonts
-		fonts.put("normal", assetManager.get("data/font/silkscreen.fnt", BitmapFont.class));
-		fonts.put("bubble", assetManager.get("data/font/silkBubble.fnt", BitmapFont.class));
+		fonts.put("normal", assetManager.get(Path.FONT_NORMAL, BitmapFont.class));
+		fonts.put("bubble", assetManager.get(Path.FONT_BUBBLE, BitmapFont.class));
 		// sprites
-		TextureAtlas atlas = assetManager.get("data/spritesheet.txt", TextureAtlas.class);
+		TextureAtlas atlas = assetManager.get(Path.SPRITESHEET, TextureAtlas.class);
 
 		// player
 		animations.put("playerIdleLeft", new Animation(0.2f, atlas.findRegions("playerIdleLeft")));
@@ -51,6 +51,9 @@ public class Assets {
 		
 		
 		// musics
+		Music mainTheme = assetManager.get(Path.MUSIC_THEME, Music.class);
+		mainTheme.setLooping(true);
+		musics.put("mainTheme", mainTheme);
 	}
 	
 	public Animation getAnimation(String animName) {
@@ -80,9 +83,19 @@ public class Assets {
 		}
 	}
 	
+	public Music getMusic(String musicName) {
+		if (musics.containsKey(musicName)) {
+			return musics.get(musicName);
+		} else {
+			Gdx.app.error(TAG, "Music " + musicName + " does not exist!");
+			return null;
+		}
+	}
+	
 	public static class Path {
 		public static final String SPRITESHEET = "data/spritesheet.txt";
 		public static final String FONT_NORMAL = "data/font/silkscreen.fnt";
 		public static final String FONT_BUBBLE = "data/font/silkBubble.fnt";
+		public static final String MUSIC_THEME = "data/music/vantan_theme.mp3";
 	}
 }

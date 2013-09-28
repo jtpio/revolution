@@ -1,6 +1,7 @@
 package com.speed.run.screens;
 
 import com.badlogic.gdx.assets.AssetManager;
+import com.badlogic.gdx.audio.Music;
 import com.badlogic.gdx.graphics.g2d.BitmapFont;
 import com.badlogic.gdx.graphics.g2d.TextureAtlas;
 import com.speed.run.IndieSpeedRun;
@@ -15,6 +16,7 @@ public class SplashScreen extends BaseScreen {
 		assetManager.load(Assets.Path.SPRITESHEET, TextureAtlas.class);
 		assetManager.load(Assets.Path.FONT_NORMAL, BitmapFont.class);
 		assetManager.load(Assets.Path.FONT_BUBBLE, BitmapFont.class);
+		assetManager.load(Assets.Path.MUSIC_THEME, Music.class);
 	}
 
 	@Override
