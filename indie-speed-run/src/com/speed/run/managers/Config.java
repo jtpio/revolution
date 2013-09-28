@@ -1,5 +1,7 @@
 package com.speed.run.managers;
 
+import com.badlogic.gdx.math.Vector2;
+
 public class Config {
 
 	// resolution
@@ -31,5 +33,11 @@ public class Config {
 	
 	// inventory
 	public static final int ITEM_PADDING = 10;
-	public static final int ICON_SIZE = 64; 
+	public static final int ICON_SIZE = 64;
+	
+	// phone
+	public static final float PHONE_SPEED = 10.0f;
+	public static final float PHONE_X = -500.0f;
+	public static final float PHONE_Y_INIT = -500.0f;
+	public static final float PHONE_Y_END = 0.0f;
 }

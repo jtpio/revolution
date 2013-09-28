@@ -1,6 +1,5 @@
 package com.speed.run.engine;
 
-import com.badlogic.gdx.graphics.g2d.Animation;
 import com.badlogic.gdx.math.Vector2;
 import com.speed.run.managers.Config;
 
@@ -21,7 +20,7 @@ public class MoveableEntity extends Entity implements OnMoveComplete {
 		delta = new Vector2();
 		speed = Config.INIT_SPEED;
 	}
-
+	
 	public void moveTo(float x, float y) {
 		float newX = (fixedAxis == Fixed.X || fixedAxis == Fixed.XY) ? pos.x:x;
 		float newY = (fixedAxis == Fixed.Y || fixedAxis == Fixed.XY) ? pos.y:y;

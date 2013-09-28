@@ -1,5 +1,6 @@
 package com.speed.run;
 
+import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.speed.run.engine.Fixed;
 import com.speed.run.engine.MoveableEntity;
 import com.speed.run.managers.Assets;
@@ -23,7 +24,6 @@ public class Player extends MoveableEntity {
 		setPosition(0, Config.NPC_Y_POS);
 		moveTo(pos.x, pos.y);
 	}
-
 	
 	@Override
 	public void moveTo(float x, float y) {
@@ -41,5 +41,4 @@ public class Player extends MoveableEntity {
 	public void setMusicMode(boolean mode) {
 		
 	}
-
 }

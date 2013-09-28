@@ -34,8 +34,31 @@ public class Assets {
 		// fonts
 		fonts.put("normal", assetManager.get(Path.FONT_NORMAL, BitmapFont.class));
 		fonts.put("bubble", assetManager.get(Path.FONT_BUBBLE, BitmapFont.class));
+
 		// sprites
 		TextureAtlas atlas = assetManager.get(Path.SPRITESHEET, TextureAtlas.class);
+		
+		// icons
+		Sprite icon;
+		// phone
+		icon = atlas.createSprite("phoneIcon");
+		icon.setOrigin(icon.getWidth()/2, icon.getHeight()/2);
+		sprites.put("phoneIcon", icon);
+		
+		// ipod
+		icon = atlas.createSprite("mp3Icon");
+		icon.setOrigin(icon.getWidth()/2, icon.getHeight()/2);
+		sprites.put("ipodIcon", icon);
+		
+		// cigarettes
+		icon = atlas.createSprite("cigarettesIcon");
+		icon.setOrigin(icon.getWidth()/2, icon.getHeight()/2);
+		sprites.put("cigarettesIcon", icon);
+		
+		// cash
+		icon = atlas.createSprite("cashIcon");
+		icon.setOrigin(icon.getWidth()/2, icon.getHeight()/2);
+		sprites.put("cashIcon", icon);
 
 		// player
 		animations.put("playerIdleLeft", new Animation(0.2f, atlas.findRegions("playerIdleLeft")));

@@ -7,6 +7,7 @@ import com.badlogic.gdx.graphics.Pixmap;
 import com.badlogic.gdx.graphics.Pixmap.Format;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.BitmapFont;
+import com.badlogic.gdx.graphics.g2d.Sprite;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.math.Vector3;
 import com.badlogic.gdx.scenes.scene2d.Actor;
@@ -17,8 +18,8 @@ import com.badlogic.gdx.scenes.scene2d.ui.Skin;
 import com.badlogic.gdx.scenes.scene2d.utils.ChangeListener;
 import com.speed.run.IndieSpeedRun;
 import com.speed.run.Player;
-import com.speed.run.State;
 import com.speed.run.engine.Entity;
+import com.speed.run.items.Phone;
 import com.speed.run.managers.Assets;
 import com.speed.run.managers.Config;
 import com.speed.run.npc.NpcManager;
@@ -52,18 +53,20 @@ public class BusStopScreen extends BaseScreen {
 		baseTable.top().left();
 		
 		// phone
-		final CheckBox phone = new CheckBox("P", getSkin());
+		final CheckBox phone = new CheckBox("", getSkin(Assets.getInstance().getSprites("phoneIcon")));
 		baseTable.add(phone).width(Config.ICON_SIZE).height(Config.ICON_SIZE);
 		phone.addListener(new ChangeListener() {
 			@Override
 			public void changed(ChangeEvent event, Actor actor) {
 				boolean enabled = phone.isChecked();
-				System.out.println(enabled);
+				if (!pause) {
+					Phone.getInstance().toggle(enabled);
+				}
 			}
 		});
 		
 		// ipod
-		final CheckBox ipod = new CheckBox("I", getSkin());
+		final CheckBox ipod = new CheckBox("", getSkin(Assets.getInstance().getSprites("ipodIcon")));
 		baseTable.add(ipod).width(Config.ICON_SIZE).height(Config.ICON_SIZE);
 		ipod.addListener(new ChangeListener() {
 			@Override
@@ -75,20 +78,22 @@ public class BusStopScreen extends BaseScreen {
 		});
 		
 		// cigarettes
-		final CheckBox cigarettes = new CheckBox("C", getSkin());
+		final CheckBox cigarettes = new CheckBox("", getSkin(Assets.getInstance().getSprites("cigarettesIcon")));
 		baseTable.add(cigarettes).width(Config.ICON_SIZE).height(Config.ICON_SIZE);
 		cigarettes.addListener(new ChangeListener() {
 			@Override
 			public void changed(ChangeEvent event, Actor actor) {
 				boolean enabled = cigarettes.isChecked();
-				System.out.println(enabled);
+				if (!pause) {
+					// TODO
+					System.out.println(enabled);
+				}
 			}
 		});
 		
 		// money
-		final CheckBox money = new CheckBox("M", getSkin());
-		baseTable.add(money).width(Config.ICON_SIZE)
-				.height(Config.ICON_SIZE);
+		final CheckBox money = new CheckBox("", getSkin(Assets.getInstance().getSprites("cashIcon")));
+		baseTable.add(money).width(Config.ICON_SIZE).height(Config.ICON_SIZE);
 		money.addListener(new ChangeListener() {
 			@Override
 			public void changed(ChangeEvent event, Actor actor) {
@@ -98,9 +103,10 @@ public class BusStopScreen extends BaseScreen {
 		});
 	}
 	
-	Skin getSkin() {
+	Skin getSkin(Sprite sprite) {
 		Skin skin = new Skin();
 
+		/*
 		Pixmap p = new Pixmap(1, 1, Format.RGBA8888);
 		p.setColor(Color.WHITE);
 		p.fill();
@@ -111,7 +117,7 @@ public class BusStopScreen extends BaseScreen {
 		CheckBoxStyle cbs = new CheckBoxStyle();
 		cbs.checkboxOn = skin.newDrawable("white", Color.ORANGE);
 		cbs.checkboxOff = skin.newDrawable("white", Color.GREEN);
-		cbs.checked = skin.newDrawable("white", Color.ORANGE);
+		//cbs.checked = skin.newDrawable("white", Color.ORANGE);
 		cbs.font = skin.getFont("default");
 		skin.add("default", cbs);
 
@@ -119,6 +125,17 @@ public class BusStopScreen extends BaseScreen {
 		ls.font = skin.getFont("default");
 		skin.add("default", ls);
 
+*/
+		
+		skin.add("white", sprite);
+		skin.add("default", Assets.getInstance().getFont("normal"));
+		CheckBoxStyle cbs = new CheckBoxStyle();
+		cbs.checkboxOn = skin.newDrawable("white");
+		cbs.checkboxOff = skin.newDrawable("white");
+		cbs.checkboxOver = skin.newDrawable("white", Color.GREEN);
+		cbs.font = skin.getFont("default");
+		skin.add("default", cbs);
+		
 		return skin;
 		
 	}
@@ -128,12 +145,11 @@ public class BusStopScreen extends BaseScreen {
 		Gdx.gl.glClearColor(1f, 1f, 1f, 1);
 		Gdx.gl.glClear(GL10.GL_COLOR_BUFFER_BIT);
 		
-		if (!pause) {
-			// process input
-			input();
-			
-			// updates
-			Player.getInstance().update(delta);
+		input();
+		Player.getInstance().update(delta);
+		Phone.getInstance().update(delta);
+		
+		if (!pause) {		
 			//camera.position.set(Player.getInstance().getPos().x, Player.getInstance().getPos().y, 0);
 			npcManager.update(delta);
 			//camera.translate(0, 1);
@@ -150,6 +166,7 @@ public class BusStopScreen extends BaseScreen {
 		npcManager.render(batch);
 		batch.setColor(1.0f, 1.0f, 1.0f, 1f);
 		Player.getInstance().draw(batch);
+		Phone.getInstance().draw(batch);
 	/*	font.draw(batch, Strings.WAITING_TIME,
 				-150 -font.getBounds(Strings.WAITING_TIME).width / 2,
 				150 -font.getBounds(Strings.WAITING_TIME).height / 2);*/

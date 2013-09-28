@@ -1,5 +1,7 @@
 package com.speed.run.items;
 
-public class Item {
+import com.speed.run.engine.MoveableEntity;
+
+public class Item extends MoveableEntity {
 
 }
