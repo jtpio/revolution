@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.Iterator;
 
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
+import com.badlogic.gdx.math.MathUtils;
 import com.speed.run.engine.Util;
 import com.speed.run.managers.Assets;
 import com.speed.run.managers.Config;
@@ -55,8 +56,8 @@ public class NpcManager {
 		if (npcs.size() >= Config.MAX_NB) return;
 		// TODO: choose random animation
 		Npc npc = new TalkingNpc(Assets.getInstance().getAnimation("npc0"));
-		npc.setPosition(Util.randomSign() * 1000, Config.NPC_Y_POS + 10);
-		npc.moveTo(Util.random(-Config.WIDTH/2,	Config.HEIGHT/2), Config.NPC_Y_POS + 10);
+		npc.setPosition(Util.randomSign() * Config.X_SPAWN, Config.NPC_Y_POS + 10);
+		npc.moveTo(MathUtils.random(-Config.WIDTH/2, Config.HEIGHT/2), Config.NPC_Y_POS + 10);
 		npcs.add(npc);
 	}
 	

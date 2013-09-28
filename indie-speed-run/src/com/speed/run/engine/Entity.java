@@ -31,6 +31,11 @@ public class Entity implements Drawable {
 		animSize.set(animation.getKeyFrame(0).getRegionWidth(), animation.getKeyFrame(0).getRegionHeight());
 	}
 	
+	public void scale(float factor) {
+		animSize.x = factor * animation.getKeyFrame(0).getRegionWidth();
+		animSize.y = factor * animation.getKeyFrame(0).getRegionHeight();
+	}
+	
 	public void update(float dt) {
 		stateTime += dt;
 	}
@@ -38,7 +43,7 @@ public class Entity implements Drawable {
 	@Override
 	public void draw(SpriteBatch batch) {
 		TextureRegion tr = animation.getKeyFrame(stateTime);
-		batch.draw(tr, pos.x - tr.getRegionWidth() / 2, pos.y - tr.getRegionHeight() / 2);
+		batch.draw(tr, pos.x - animSize.x / 2, pos.y - animSize.y / 2, animSize.x, animSize.y);
 	}
 
 	public Vector2 getPosition() {
@@ -53,3 +58,4 @@ public class Entity implements Drawable {
 		pos.set(x, y);
 	}
 }
+
