@@ -7,18 +7,27 @@ import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.math.Vector2;
 
-public class Entity implements Drawable {
+public class Entity implements Drawable, Comparable<Entity> {
 	protected Vector2 pos;
 	protected Animation animation;
 	protected HashMap<String, Animation> animations;
 	protected float stateTime;
 	protected Vector2 animSize;
 	protected boolean left;
+	protected int depth;
 	
 	public Entity() {
 		Init();
 	}
-	
+
+	public int getDepth() {
+		return depth;
+	}
+
+	public void setDepth(int f) {
+		this.depth = f;
+	}
+
 	private void Init() {
 		pos = new Vector2();
 		animSize = new Vector2();
@@ -35,6 +44,7 @@ public class Entity implements Drawable {
 	
 	public void addAnimation(String animName, Animation a) {
 		animations.put(animName, a);
+		if (animation == null) setAnimation(animName);
 	}
 	
 	public void scale(float factor) {
@@ -62,6 +72,13 @@ public class Entity implements Drawable {
 
 	public void setPosition(float x, float y) {
 		pos.set(x, y);
+	}
+
+	@Override
+	public int compareTo(Entity o) {
+		if (depth < o.depth) return -1;
+		else if (depth > o.depth) return 1;
+		return 0;
 	}
 }
 

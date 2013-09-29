@@ -1,7 +1,5 @@
 package com.speed.run.engine;
 
-import aurelienribon.tweenengine.Timeline;
-
 import com.badlogic.gdx.graphics.g2d.BitmapFont;
 import com.badlogic.gdx.graphics.g2d.BitmapFont.HAlignment;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
@@ -33,6 +31,8 @@ public class SpeechBubble extends Entity {
 		font = Assets.getInstance().getFont("bubble");
 		display = false;
 		factor = 0;
+		text = "";
+		displayedText = "";
 	}
 	
 	public void setText(String newText) {
@@ -61,6 +61,14 @@ public class SpeechBubble extends Entity {
 		factor = f;
 		if (factor <= Config.MIN_FONT_SCALE) displayedText = far;
 		super.scale(factor);
+	}
+
+	public float getFactor() {
+		return factor;
+	}
+
+	public void setFactor(float factor) {
+		this.factor = factor;
 	}
 
 	@Override

@@ -16,20 +16,23 @@ public class Config {
 	public static final float PHONE_BLINK = 1.0f;
 	
 	// NPC
-	public static final float SPAWN_INTERVAL = 1; // in seconds
-	public static final float REMOVE_INTERVAL = 60; // in seconds
+	public static final float SPAWN_INTERVAL = 0.5f; // in seconds
 	public static final float SPAWN_NB = 1;
-	public static final float MAX_NB = 5;
-	public static final float X_SPAWN = 0;
+	public static final float MAX_NB = 10; // per level
+	public static final float X_SPAWN = 1000;
+	public static final float DISTANCE_DIALOG = 50;
+	public static final float DEPTH_INCR = 12;
+	public static final int START_DEPTH = 127;
+	public static final int NB_LAYERS = 3;
 	
 	// bubbles
 	public static final float BUBBLE_Y_OFFSET = 120;
-	public static final float SENTENCE_DURATION = 3; // s
+	public static final float SENTENCE_DURATION = 1.5f; // s
 	public static final float MAX_SCALE = 4f;
 	public static final float MAX_DISTANCE = 200;
 	public static final float DEFAULT_FONT_SCALE = 1.0f;
 	public static final float MIN_FONT_SCALE = 0.3f;
-	public static final float PAUSE = 1.0f;
+	public static final float PAUSE = 2.0f;
 	
 	// inventory
 	public static final int ITEM_PADDING = 10;
@@ -40,4 +43,12 @@ public class Config {
 	public static final float PHONE_X = -450.0f;
 	public static final float PHONE_Y_INIT = -500.0f;
 	public static final float PHONE_Y_END = -150.0f;
+	
+	// Bus
+	public static final float MIN_TIME_BUS_COMES = 10.0f; // 60s
+	public static final float MAX_TIME_BUS_COMES = 20.0f; // 120s
+	public static final float WAITING_TIME_STOP = 5; // s
+	public static final float INIT_POS_X_BUS = 1000;
+	public static final float END_POS_X_BUS = -1000;
+	public static final float POS_Y_BUS = -200;
 }

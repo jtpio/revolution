@@ -4,9 +4,8 @@ import java.util.LinkedList;
 
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.speed.run.dialog.Sentence;
-import com.speed.run.dialog.SentenceFactory;
+import com.speed.run.engine.Renderer;
 import com.speed.run.engine.SpeechBubble;
-import com.speed.run.managers.Assets;
 import com.speed.run.managers.Config;
 
 public class TalkingNpc extends Npc {
@@ -16,19 +15,17 @@ public class TalkingNpc extends Npc {
 	protected int currentSentence;
 	protected float time;
 	
-	public TalkingNpc() {
+	public TalkingNpc(LinkedList<Sentence> sentences) {
 		super();
+		this.sentences = sentences;
 		init();
 	}
 
 	private void init() {
-		animations.put("idleRight", Assets.getInstance().getAnimation("npc0"));
-		setAnimation("idleRight");
 		speechBubble = new SpeechBubble();
-		sentences = SentenceFactory.randomSentences();
-		currentSentence = 0;
+		speechBubble.setDepth(depth);
+		Renderer.getInstance().addEntity(speechBubble);
 		time = 0;
-		speechBubble.setText(sentences.getFirst().getText());
 	}
 	
 	@Override
@@ -36,6 +33,14 @@ public class TalkingNpc extends Npc {
 		speechBubble = null;
 		sentences = null;
 		super.kill();
+	}
+	
+	public LinkedList<Sentence> getSentences() {
+		return sentences;
+	}
+
+	public void setSentences(LinkedList<Sentence> sentences) {
+		this.sentences = sentences;
 	}
 
 	@Override

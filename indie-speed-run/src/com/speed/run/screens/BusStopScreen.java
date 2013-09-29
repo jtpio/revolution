@@ -3,7 +3,6 @@ package com.speed.run.screens;
 import aurelienribon.tweenengine.BaseTween;
 import aurelienribon.tweenengine.Tween;
 import aurelienribon.tweenengine.TweenCallback;
-import aurelienribon.tweenengine.TweenManager;
 import aurelienribon.tweenengine.equations.Quad;
 
 import com.badlogic.gdx.Gdx;
@@ -21,28 +20,42 @@ import com.badlogic.gdx.scenes.scene2d.utils.ChangeListener;
 import com.speed.run.IndieSpeedRun;
 import com.speed.run.Player;
 import com.speed.run.engine.Entity;
+import com.speed.run.engine.Renderer;
 import com.speed.run.items.Phone;
-import com.speed.run.items.PhoneAcessor;
 import com.speed.run.managers.Assets;
 import com.speed.run.managers.Config;
 import com.speed.run.npc.NpcManager;
+import com.speed.run.tweens.BaseScreenAccessor;
+import com.speed.run.tweens.PhoneAcessor;
 
 public class BusStopScreen extends BaseScreen {
 	
+	protected Entity busstop;
 	protected Entity background;
 	protected BitmapFont font;
 	protected NpcManager npcManager;
-	protected TweenManager tweenManager;
 	
 	protected boolean pause = false;
+	protected boolean stop = false;
 	protected boolean phoneLocked = false;
 	
 	public BusStopScreen(IndieSpeedRun game) {
 		super(game);
+		
+		// background
 		background = new Entity();
 		background.addAnimation("idleLeft", Assets.getInstance().getAnimation("bg"));
 		background.setAnimation("idleLeft");
 		background.setPosition(0, 300);
+		background.setDepth(110);
+		
+		// booth
+		busstop = new Entity();
+		busstop.addAnimation("idleLeft", Assets.getInstance().getAnimation("busstop"));
+		busstop.setAnimation("idleLeft");
+		busstop.setPosition(0, -60);
+		busstop.setDepth(120);
+		
 		font = Assets.getInstance().getFont("normal");
 		font.scale(0.001f);
 		npcManager = new NpcManager();
@@ -50,12 +63,14 @@ public class BusStopScreen extends BaseScreen {
 		// UI stuff for icons
 		setupUI();
 		
+		// rendering
+		Renderer.getInstance().addEntity(background);
+		Renderer.getInstance().addEntity(busstop);
+		Renderer.getInstance().addEntity(Player.getInstance());
+		Renderer.getInstance().addEntity(Phone.getInstance());
+		
 		// start music
 		Assets.getInstance().getMusic("mainTheme").play();
-		
-		// TWEENS
-		tweenManager = new TweenManager();
-		Tween.registerAccessor(Phone.class, new PhoneAcessor());
 	}
 	
 	private void setupUI() {
@@ -88,7 +103,7 @@ public class BusStopScreen extends BaseScreen {
 							phoneLocked = false;
 						}
 					})
-				    .start(tweenManager);
+				    .start(IndieSpeedRun.tweenManager);
 				}
 			}
 		});
@@ -100,7 +115,6 @@ public class BusStopScreen extends BaseScreen {
 			@Override
 			public void changed(ChangeEvent event, Actor actor) {
 				boolean enabled = ipod.isChecked();
-				Player.getInstance().setMusicMode(enabled);
 				pause = !pause;
 			}
 		});
@@ -129,33 +143,32 @@ public class BusStopScreen extends BaseScreen {
 			}
 		});
 		
-		
+		// money
+		final CheckBox busTicket = new CheckBox("", getSkin(Assets.getInstance().getSprites("cashIcon")));
+		baseTable.add(busTicket).width(Config.ICON_SIZE).height(Config.ICON_SIZE);
+		busTicket.addListener(new ChangeListener() {
+			@Override
+			public void changed(ChangeEvent event, Actor actor) {
+				baseTable.removeActor(busTicket);
+				if (npcManager.isBusHere()) {
+					pause = true;
+					Tween.to(game.getBusStopScreen(), BaseScreenAccessor.ALPHA, 2.0f)
+					 .target(0.0f)
+					 .setCallback(new TweenCallback() {
+						
+						@Override
+						public void onEvent(int type, BaseTween<?> source) {
+							game.setScreen(game.getInBusScreen());
+						}
+					})
+					 .start(IndieSpeedRun.tweenManager);
+				}
+			}
+		});
 	}
 	
 	Skin getSkin(Sprite sprite) {
-		Skin skin = new Skin();
-
-		/*
-		Pixmap p = new Pixmap(1, 1, Format.RGBA8888);
-		p.setColor(Color.WHITE);
-		p.fill();
-		skin.add("white", new Texture(p));
-		skin.add("default", Assets.getInstance().getFont("normal"));
-
-		// button
-		CheckBoxStyle cbs = new CheckBoxStyle();
-		cbs.checkboxOn = skin.newDrawable("white", Color.ORANGE);
-		cbs.checkboxOff = skin.newDrawable("white", Color.GREEN);
-		//cbs.checked = skin.newDrawable("white", Color.ORANGE);
-		cbs.font = skin.getFont("default");
-		skin.add("default", cbs);
-
-		LabelStyle ls = new LabelStyle();
-		ls.font = skin.getFont("default");
-		skin.add("default", ls);
-
-*/
-		
+		Skin skin = new Skin();		
 		skin.add("white", sprite);
 		skin.add("default", Assets.getInstance().getFont("normal"));
 		CheckBoxStyle cbs = new CheckBoxStyle();
@@ -174,29 +187,31 @@ public class BusStopScreen extends BaseScreen {
 		Gdx.gl.glClearColor(1f, 1f, 1f, 1);
 		Gdx.gl.glClear(GL10.GL_COLOR_BUFFER_BIT);
 		
-		input();
-		tweenManager.update(delta);
-		Player.getInstance().update(delta);
-		Phone.getInstance().update(delta);
 		
-		if (!pause) {		
-			//camera.position.set(Player.getInstance().getPos().x, Player.getInstance().getPos().y, 0);
-			npcManager.update(delta);
-			//camera.translate(0, 1);
-			camera.update();
+		if (!stop) {
+			input();
+			IndieSpeedRun.tweenManager.update(delta);
+			Player.getInstance().update(delta);
+			Phone.getInstance().update(delta);
+		
+			if (!pause) {		
+				//camera.position.set(Player.getInstance().getPos().x, Player.getInstance().getPos().y, 0);
+				npcManager.update(delta);
+				//camera.translate(0, 1);
+				camera.update();
+			}
 		}
 		
 		// rendering
 		batch.setProjectionMatrix(camera.combined);
 		batch.begin();
 		
-		float colorCmpt = pause?0.5f:1.0f;
-		batch.setColor(colorCmpt, colorCmpt, colorCmpt, 1f);
-		background.draw(batch);
-		npcManager.render(batch);
-		batch.setColor(1.0f, 1.0f, 1.0f, 1f);
-		Player.getInstance().draw(batch);
-		Phone.getInstance().draw(batch);
+		Renderer.getInstance().render(batch, pause, alpha);
+		/*background.draw(batch);
+		busstop.draw(batch);
+		npcManager.render(batch);*/
+	/*	Player.getInstance().draw(batch);
+		Phone.getInstance().draw(batch);*/
 	/*	font.draw(batch, Strings.WAITING_TIME,
 				-150 -font.getBounds(Strings.WAITING_TIME).width / 2,
 				150 -font.getBounds(Strings.WAITING_TIME).height / 2);*/

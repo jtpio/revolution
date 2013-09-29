@@ -1,4 +1,6 @@
-package com.speed.run.items;
+package com.speed.run.tweens;
+
+import com.speed.run.items.Phone;
 
 import aurelienribon.tweenengine.TweenAccessor;
 

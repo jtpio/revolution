@@ -7,10 +7,12 @@ public class Phone extends Item {
 
 	private static Phone instance = null;
 	private Phone() {
+		super();
 		setPosition(Config.PHONE_X, Config.PHONE_Y_INIT);
 		animations.put("switchedOff", Assets.getInstance().getAnimation("phone"));
 		animations.put("idle", Assets.getInstance().getAnimation("phoneDisplay"));
 		setAnimation("switchedOff");
+		setDepth(190);
 	}
 	
 	public static Phone getInstance() {

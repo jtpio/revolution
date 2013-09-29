@@ -4,7 +4,7 @@ filter: Linear,Linear
 repeat: none
 playerWalkLeft
   rotate: false
-  xy: 1328, 1204
+  xy: 166, 1606
   size: 80, 164
   orig: 80, 164
   offset: 0, 0
@@ -18,70 +18,77 @@ bg
   index: -1
 playerIdleLeft
   rotate: false
-  xy: 918, 1204
+  xy: 1754, 1204
   size: 80, 164
   orig: 80, 164
   offset: 0, 0
   index: 0
 playerWalkLeft
   rotate: false
-  xy: 1574, 1204
+  xy: 412, 1606
   size: 80, 164
   orig: 80, 164
   offset: 0, 0
   index: 6
 playerWalkRight
   rotate: false
-  xy: 146, 1606
+  xy: 1008, 1606
   size: 70, 164
   orig: 70, 164
   offset: 0, 0
   index: 6
 playerWalkRight
   rotate: false
-  xy: 1882, 1204
+  xy: 720, 1606
   size: 70, 164
   orig: 70, 164
   offset: 0, 0
   index: 2
 phoneDisplay
   rotate: false
-  xy: 2, 1204
+  xy: 838, 1204
   size: 224, 400
   orig: 224, 400
   offset: 0, 0
   index: 0
+busstop
+  rotate: false
+  xy: 2, 1204
+  size: 300, 210
+  orig: 300, 210
+  offset: 0, 0
+  index: -1
 playerWalkLeft
   rotate: false
-  xy: 1246, 1204
+  xy: 84, 1606
   size: 80, 164
   orig: 80, 164
   offset: 0, 0
   index: 2
 phone
   rotate: false
-  xy: 610, 1204
+  xy: 1446, 1204
   size: 224, 400
   orig: 224, 400
   offset: 0, 0
   index: 0
 playerWalkRight
   rotate: false
-  xy: 74, 1606
+  xy: 936, 1606
   size: 70, 164
   orig: 70, 164
   offset: 0, 0
   index: 5
 playerWalkLeft
   rotate: false
-  xy: 1164, 1204
+  xy: 2, 1606
   size: 80, 164
   orig: 80, 164
   offset: 0, 0
   index: 1
 playerWalkRight
   rotate: false
-  xy: 1810, 1204
+  xy: 648, 1606
   size: 70, 164
   orig: 70, 164
   offset: 0, 0
@@ -95,112 +102,119 @@ bubble
   index: -1
 cashIcon
   rotate: false
-  xy: 1366, 2
+  xy: 304, 1204
   size: 154, 162
   orig: 154, 162
   offset: 0, 0
   index: -1
 playerWalkLeft
   rotate: false
-  xy: 1492, 1204
+  xy: 330, 1606
   size: 80, 164
   orig: 80, 164
   offset: 0, 0
   index: 5
 phoneIcon
   rotate: false
-  xy: 454, 1204
+  xy: 1290, 1204
   size: 154, 162
   orig: 154, 162
   offset: 0, 0
   index: -1
 mp3Icon
   rotate: false
-  xy: 1678, 2
+  xy: 616, 1204
   size: 154, 162
   orig: 154, 162
   offset: 0, 0
   index: -1
+bus
+  rotate: false
+  xy: 1366, 2
+  size: 564, 153
+  orig: 564, 153
+  offset: 0, 0
+  index: 0
 playerIdleRight
   rotate: false
-  xy: 1000, 1204
+  xy: 1836, 1204
   size: 80, 164
   orig: 80, 164
   offset: 0, 0
   index: 0
 npc0
   rotate: false
-  xy: 1834, 2
+  xy: 772, 1204
   size: 64, 150
   orig: 64, 150
   offset: 0, 0
   index: -1
 playerWalkRight
   rotate: false
-  xy: 2, 1606
+  xy: 864, 1606
   size: 70, 164
   orig: 70, 164
   offset: 0, 0
   index: 4
 playerWalkLeft
   rotate: false
-  xy: 1082, 1204
+  xy: 1918, 1204
   size: 80, 164
   orig: 80, 164
   offset: 0, 0
   index: 0
 playerWalkRight
   rotate: false
-  xy: 1738, 1204
+  xy: 576, 1606
   size: 70, 164
   orig: 70, 164
   offset: 0, 0
   index: 0
 playerWalkLeft
   rotate: false
-  xy: 1410, 1204
+  xy: 248, 1606
   size: 80, 164
   orig: 80, 164
   offset: 0, 0
   index: 4
 player
   rotate: false
-  xy: 836, 1204
+  xy: 1672, 1204
   size: 80, 164
   orig: 80, 164
   offset: 0, 0
   index: -1
 playerWalkLeft
   rotate: false
-  xy: 1656, 1204
+  xy: 494, 1606
   size: 80, 164
   orig: 80, 164
   offset: 0, 0
   index: 7
 playerWalkRight
   rotate: false
-  xy: 218, 1606
+  xy: 1080, 1606
   size: 70, 164
   orig: 70, 164
   offset: 0, 0
   index: 7
 playerWalkRight
   rotate: false
-  xy: 1954, 1204
+  xy: 792, 1606
   size: 70, 164
   orig: 70, 164
   offset: 0, 0
   index: 3
 cigarettesIcon
   rotate: false
-  xy: 1522, 2
+  xy: 460, 1204
   size: 154, 162
   orig: 154, 162
   offset: 0, 0
   index: -1
 phoneDisplay
   rotate: false
-  xy: 228, 1204
+  xy: 1064, 1204
   size: 224, 400
   orig: 224, 400
   offset: 0, 0

@@ -75,6 +75,12 @@ public class Assets {
 		// background
 		animations.put("bg", new Animation(0.5f, atlas.findRegions("bg")));
 		
+		// background
+		animations.put("busstop", new Animation(0.5f, atlas.findRegions("busstop")));
+		
+		// bus
+		animations.put("bus", new Animation(0.5f, atlas.findRegions("bus")));
+		
 		// sounds
 		
 		

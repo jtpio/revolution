@@ -5,7 +5,7 @@ import java.util.LinkedList;
 import com.speed.run.managers.Config;
 
 public class SentenceFactory {
-
+	
 	public static LinkedList<Sentence> randomSentences() {
 		LinkedList<Sentence> res = new LinkedList<Sentence>();
 		
