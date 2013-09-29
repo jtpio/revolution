@@ -8,7 +8,6 @@ import aurelienribon.tweenengine.BaseTween;
 import aurelienribon.tweenengine.Timeline;
 import aurelienribon.tweenengine.Tween;
 import aurelienribon.tweenengine.TweenCallback;
-import aurelienribon.tweenengine.equations.Quad;
 import aurelienribon.tweenengine.equations.Quint;
 
 import com.badlogic.gdx.Gdx;
@@ -17,6 +16,8 @@ import com.badlogic.gdx.math.MathUtils;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.utils.JsonReader;
 import com.badlogic.gdx.utils.JsonValue;
+import com.badlogic.gdx.utils.Timer;
+import com.badlogic.gdx.utils.Timer.Task;
 import com.speed.run.IndieSpeedRun;
 import com.speed.run.dialog.Sentence;
 import com.speed.run.engine.MoveableEntity;
@@ -25,26 +26,21 @@ import com.speed.run.engine.Util;
 import com.speed.run.items.BusSign;
 import com.speed.run.managers.Assets;
 import com.speed.run.managers.Config;
+import com.speed.run.managers.Dialogs;
 import com.speed.run.tweens.MoveableEntityAccessor;
 
 public class NpcManager {
-
-	public static final String[] jsonFiles = {
-		"data/dialogs/bros.json",
-		"data/dialogs/homeless.json"
-	};
 	
 	private ArrayList<Npc> npcs;
-	private float spawnTimer;
-	private float busTimer;
 	private ArrayList<Pair> pairs;
-	
-	// next schedules
-	private float nextBus;
-	private float nextSpawn;
 	
 	private BusSign busSign;
 	private MoveableEntity bus;
+	
+	// timers
+	private Timer busTimer;
+	private Timer spawnTimer;
+	private Timer busSignTimer;
 	
 	public NpcManager() {
 		reset();
@@ -54,24 +50,13 @@ public class NpcManager {
 		return bus.getPosition().x == 0;
 	}
 	
-	private void nextBus() {
-		nextBus = MathUtils.random(Config.MIN_TIME_BUS_COMES, Config.MAX_TIME_BUS_COMES);
-		busTimer = 0;
-	}
-	
-	private void nextSpawn() {
-		nextSpawn = Config.SPAWN_INTERVAL;
-		spawnTimer = 0;
-	}
-	
 	public void reset() {
 		npcs = new ArrayList<Npc>();
 		pairs = new ArrayList<Pair>();
-		nextBus();
-		nextSpawn();
-		for (int i = 0; i < jsonFiles.length; i++) {
-			loadDialogs(jsonFiles[i]);
-		}
+		
+		// retrieve pairs
+		pairs = Dialogs.getInstance().getPairs();
+		
 		bus = new MoveableEntity();
 		bus.setPosition(Config.INIT_POS_X_BUS, Config.POS_Y_BUS);
 		bus.addAnimation("idle", Assets.getInstance().getAnimation("bus"));
@@ -83,56 +68,71 @@ public class NpcManager {
 		busSign.setDepth(149);
 		Renderer.getInstance().addEntity(busSign);
 		
-		busSign.setWaitingTime(MathUtils.random(2, 15));
+		
+		
+		busTimer = new Timer();
+		busTimer.scheduleTask(new Task() {
+			@Override
+			public void run() {
+				showBus();
+				busTimer.delay((long) MathUtils.random(Config.MIN_TIME_BUS_COMES, Config.MAX_TIME_BUS_COMES));
+			}
+		}, Config.MIN_TIME_BUS_COMES, 10);
+		busTimer.start();
+		
+		spawnTimer = new Timer();
+		spawnTimer.scheduleTask(new Task() {
+			@Override
+			public void run() {
+				add();
+			}
+		}, 0, Config.SPAWN_INTERVAL);
+		spawnTimer.start();
+		
+		busSignTimer = new Timer();
+		busSignTimer.scheduleTask(new Task() {
+			@Override
+			public void run() {
+				busSign.setWaitingTime(MathUtils.random(2, 15));
+				busSignTimer.delay(MathUtils.random(10, 20));
+			}
+		}, 0, 5);
+		busSignTimer.start();
+		
 	}
 	
-	public void update(float dt) {
-		busTimer += dt;
-		spawnTimer += dt;
-		if (spawnTimer > nextSpawn) {
-			add();
-			nextSpawn();
-		}
-		
-		if (busTimer > 5) {
-			busTimer = 0;
-			busSign.setWaitingTime(MathUtils.random(2, 15));
-		}
-		
+	public void update(float dt) {		
 		Iterator<Npc> iterator = npcs.iterator();
 		while (iterator.hasNext()) {
 			Npc npc = iterator.next();
 			npc.update(dt);
 		}
-		
-		if (busTimer > nextBus) {
-			busSign.setWaitingTime(MathUtils.random(2, 15));
-			nextBus();
-			Timeline.createSequence()
-				.push(Tween.to(bus, MoveableEntityAccessor.POSITION_XY, 1.0f).target(0, bus.getPosition().y).ease(Quint.OUT).setCallback(new TweenCallback() {
-					
-					@Override
-					public void onEvent(int type, BaseTween<?> source) {
-						for (Npc npc: npcs) {
-							Renderer.getInstance().removeLayer(npc.getDepth());
-						}
-						npcs = new ArrayList<Npc>();
-						
-					}
-				}))
-				.pushPause(Config.WAITING_TIME_STOP)
-				.push(Tween.to(bus, MoveableEntityAccessor.POSITION_XY, 1.0f).target(Config.END_POS_X_BUS, bus.getPosition().y).ease(Quint.IN).setCallback(new TweenCallback() {
-					
-					@Override
-					public void onEvent(int type, BaseTween<?> source) {
-						bus.setPosition(Config.INIT_POS_X_BUS, Config.POS_Y_BUS);	
-					}
-				}))
-				.start(IndieSpeedRun.tweenManager);
-		}
 	}
 	
-	
+	private void showBus() {
+		busSign.setWaitingTime(MathUtils.random(2, 15));
+		Timeline.createSequence()
+			.push(Tween.to(bus, MoveableEntityAccessor.POSITION_XY, 1.0f).target(0, bus.getPosition().y).ease(Quint.OUT).setCallback(new TweenCallback() {
+				
+				@Override
+				public void onEvent(int type, BaseTween<?> source) {
+					for (Npc npc: npcs) {
+						Renderer.getInstance().removeLayer(npc.getDepth());
+					}
+					npcs = new ArrayList<Npc>();
+					
+				}
+			}))
+			.pushPause(Config.WAITING_TIME_STOP)
+			.push(Tween.to(bus, MoveableEntityAccessor.POSITION_XY, 1.0f).target(Config.END_POS_X_BUS, bus.getPosition().y).ease(Quint.IN).setCallback(new TweenCallback() {
+				
+				@Override
+				public void onEvent(int type, BaseTween<?> source) {
+					bus.setPosition(Config.INIT_POS_X_BUS, Config.POS_Y_BUS);	
+				}
+			}))
+			.start(IndieSpeedRun.tweenManager);
+	}
 	
 	public void render(SpriteBatch batch) {
 		Iterator<Npc> iterator = npcs.iterator();

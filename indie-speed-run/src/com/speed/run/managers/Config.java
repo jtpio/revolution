@@ -17,7 +17,7 @@ public class Config {
 	public static final float PHONE_BLINK = 1.0f;
 	
 	// NPC
-	public static final float SPAWN_INTERVAL = 0.5f; // in seconds
+	public static final float SPAWN_INTERVAL = 1.0f; // in seconds
 	public static final float SPAWN_NB = 1;
 	public static final float MAX_NB = 10; // per level
 	public static final float X_SPAWN = 1000;
