@@ -14,6 +14,7 @@ public class SplashScreen extends BaseScreen {
 	public SplashScreen(IndieSpeedRun game) {
 		super(game);
 		assetManager.load(Assets.Path.SPRITESHEET, TextureAtlas.class);
+		assetManager.load(Assets.Path.SPRITESHEET2, TextureAtlas.class);
 		assetManager.load(Assets.Path.FONT_NORMAL, BitmapFont.class);
 		assetManager.load(Assets.Path.FONT_BUBBLE, BitmapFont.class);
 		assetManager.load(Assets.Path.MUSIC_THEME, Music.class);

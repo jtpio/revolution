@@ -37,6 +37,7 @@ public class Assets {
 
 		// sprites
 		TextureAtlas atlas = assetManager.get(Path.SPRITESHEET, TextureAtlas.class);
+		TextureAtlas atlas2 = assetManager.get(Path.SPRITESHEET2, TextureAtlas.class);
 		
 		// icons
 		Sprite icon;
@@ -67,13 +68,13 @@ public class Assets {
 		animations.put("playerWalkRight", new Animation(Config.WALKING_SPEED, atlas.findRegions("playerWalkRight"), Animation.LOOP));
 		animations.put("npc0", new Animation(0.5f, atlas.findRegions("npc0")));
 		animations.put("bubble", new Animation(0.5f, atlas.findRegions("bubble")));
-		
+
 		// phone
 		animations.put("phone", new Animation(0.2f, atlas.findRegions("phone"), Animation.LOOP));
 		animations.put("phoneDisplay", new Animation(Config.PHONE_BLINK, atlas.findRegions("phoneDisplay"), Animation.LOOP));
 		
 		// background
-		animations.put("bg", new Animation(0.5f, atlas.findRegions("bg")));
+		animations.put("bg", new Animation(0.5f, atlas2.findRegions("bg")));
 		
 		// busstop
 		animations.put("busstop", new Animation(0.5f, atlas.findRegions("busstop")));
@@ -86,6 +87,10 @@ public class Assets {
 		
 		// cash
 		animations.put("cashIcon", new Animation(0.5f, atlas.findRegions("cashIcon")));
+		
+		// bro1
+		animations.put("bro1WalkRight", new Animation(Config.WALKING_SPEED, atlas.findRegions("npcBro1Right"), Animation.LOOP));
+		animations.put("bro1IdleRight", new Animation(Config.WALKING_SPEED, atlas.findRegions("npcBro1"), Animation.LOOP));
 		
 		// sounds
 		
@@ -134,8 +139,10 @@ public class Assets {
 	
 	public static class Path {
 		public static final String SPRITESHEET = "data/spritesheet.txt";
+		public static final String SPRITESHEET2 = "data/spritesheet2.txt";
 		public static final String FONT_NORMAL = "data/font/silkscreen.fnt";
 		public static final String FONT_BUBBLE = "data/font/silkBubble.fnt";
 		public static final String MUSIC_THEME = "data/music/vantan_theme.mp3";
 	}
 }
+

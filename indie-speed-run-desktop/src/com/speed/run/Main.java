@@ -8,7 +8,7 @@ public class Main {
 	public static void main(String[] args) {
 		LwjglApplicationConfiguration cfg = new LwjglApplicationConfiguration();
 		cfg.title = "indie-speed-run";
-		cfg.useGL20 = false;
+		cfg.useGL20 = true;
 		cfg.width = Config.WIDTH;
 		cfg.height = Config.HEIGHT;
 		//cfg.fullscreen = true;

@@ -7,6 +7,7 @@ import com.badlogic.gdx.graphics.g2d.Animation;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.math.Vector2;
+import com.speed.run.Player;
 
 public class Entity implements Drawable, Comparable<Entity> {
 	protected Vector2 pos;
@@ -70,10 +71,12 @@ public class Entity implements Drawable, Comparable<Entity> {
 	@Override
 	public void draw(SpriteBatch batch) {
 		TextureRegion tr = animation.getKeyFrame(stateTime);
+		if (getClass() != Player.class && left && !tr.isFlipX()) tr.flip(true, false); 
 		Color prev = batch.getColor();
 		batch.setColor(prev.r, prev.g, prev.b, prev.a * alpha);
 		batch.draw(tr, pos.x - animSize.x / 2, pos.y - animSize.y / 2, animSize.x, animSize.y);
 		batch.setColor(prev);
+		if (tr.isFlipX()) tr.flip(true, false);
 	}
 
 	public Vector2 getPosition() {

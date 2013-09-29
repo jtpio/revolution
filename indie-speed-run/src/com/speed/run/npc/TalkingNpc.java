@@ -15,8 +15,8 @@ public class TalkingNpc extends Npc {
 	protected int currentSentence;
 	protected float time;
 	
-	public TalkingNpc(LinkedList<Sentence> sentences) {
-		super();
+	public TalkingNpc(String name, LinkedList<Sentence> sentences) {
+		super(name);
 		this.sentences = sentences;
 		init();
 	}

@@ -153,12 +153,12 @@ public class NpcManager {
 			int dudes = (int)Math.random() * pairs.size();
 			Pair pair = pairs.remove(dudes);
 			
-			npc = new TalkingNpc(pair.getFirst());
+			npc = new TalkingNpc("bro1", pair.getFirst());
 			if (pair.getSecond() != null) {
-				npc2 = new TalkingNpc(pair.getSecond());
+				npc2 = new TalkingNpc("bro1", pair.getSecond());
 			}
 		} else {
-			npc = new Npc();
+			npc = new Npc("bro1");
 		}
 		
 		// setting a speed
