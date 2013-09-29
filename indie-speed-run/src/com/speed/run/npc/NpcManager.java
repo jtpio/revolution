@@ -32,7 +32,7 @@ public class NpcManager {
 		
 		lastRemove += dt;
 		if (lastRemove > Config.REMOVE_INTERVAL) {
-			removeRandom();
+			//removeRandom();
 			lastRemove = 0;
 		}
 		

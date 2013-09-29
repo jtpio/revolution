@@ -2,7 +2,6 @@ package com.speed.run.npc;
 
 import java.util.LinkedList;
 
-import com.badlogic.gdx.graphics.g2d.Animation;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.speed.run.dialog.Sentence;
 import com.speed.run.dialog.SentenceFactory;

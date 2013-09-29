@@ -43,7 +43,8 @@ public class MoveableEntity extends Entity implements OnMoveComplete {
 
 	@Override
 	public void setIdleAnimation() {
-		if (left) setAnimation("idleLeft");
-		else setAnimation("idleRight");
+		if (left && animations.containsKey("idleLeft")) setAnimation("idleLeft");
+		else if (animations.containsKey("idleRight")) setAnimation("idleRight");
+		else if (animations.containsKey("idle")) setAnimation("idle");
 	}
 }

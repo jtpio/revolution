@@ -67,6 +67,11 @@ public class Assets {
 		animations.put("playerWalkRight", new Animation(Config.WALKING_SPEED, atlas.findRegions("playerWalkRight"), Animation.LOOP));
 		animations.put("npc0", new Animation(0.5f, atlas.findRegions("npc0")));
 		animations.put("bubble", new Animation(0.5f, atlas.findRegions("bubble")));
+		
+		// phone
+		animations.put("phone", new Animation(0.2f, atlas.findRegions("phone"), Animation.LOOP));
+		animations.put("phoneDisplay", new Animation(Config.PHONE_BLINK, atlas.findRegions("phoneDisplay"), Animation.LOOP));
+		
 		// background
 		animations.put("bg", new Animation(0.5f, atlas.findRegions("bg")));
 		

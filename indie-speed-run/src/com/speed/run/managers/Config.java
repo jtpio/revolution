@@ -1,6 +1,5 @@
 package com.speed.run.managers;
 
-import com.badlogic.gdx.math.Vector2;
 
 public class Config {
 
@@ -14,6 +13,7 @@ public class Config {
 	
 	// animations
 	public static final float WALKING_SPEED = 0.05f;
+	public static final float PHONE_BLINK = 1.0f;
 	
 	// NPC
 	public static final float SPAWN_INTERVAL = 1; // in seconds
@@ -37,7 +37,7 @@ public class Config {
 	
 	// phone
 	public static final float PHONE_SPEED = 10.0f;
-	public static final float PHONE_X = -500.0f;
+	public static final float PHONE_X = -450.0f;
 	public static final float PHONE_Y_INIT = -500.0f;
-	public static final float PHONE_Y_END = 0.0f;
+	public static final float PHONE_Y_END = -150.0f;
 }

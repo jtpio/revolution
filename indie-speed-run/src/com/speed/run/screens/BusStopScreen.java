@@ -1,11 +1,14 @@
 package com.speed.run.screens;
 
+import aurelienribon.tweenengine.BaseTween;
+import aurelienribon.tweenengine.Tween;
+import aurelienribon.tweenengine.TweenCallback;
+import aurelienribon.tweenengine.TweenManager;
+import aurelienribon.tweenengine.equations.Quad;
+
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.GL10;
-import com.badlogic.gdx.graphics.Pixmap;
-import com.badlogic.gdx.graphics.Pixmap.Format;
-import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.BitmapFont;
 import com.badlogic.gdx.graphics.g2d.Sprite;
 import com.badlogic.gdx.math.Vector2;
@@ -13,13 +16,13 @@ import com.badlogic.gdx.math.Vector3;
 import com.badlogic.gdx.scenes.scene2d.Actor;
 import com.badlogic.gdx.scenes.scene2d.ui.CheckBox;
 import com.badlogic.gdx.scenes.scene2d.ui.CheckBox.CheckBoxStyle;
-import com.badlogic.gdx.scenes.scene2d.ui.Label.LabelStyle;
 import com.badlogic.gdx.scenes.scene2d.ui.Skin;
 import com.badlogic.gdx.scenes.scene2d.utils.ChangeListener;
 import com.speed.run.IndieSpeedRun;
 import com.speed.run.Player;
 import com.speed.run.engine.Entity;
 import com.speed.run.items.Phone;
+import com.speed.run.items.PhoneAcessor;
 import com.speed.run.managers.Assets;
 import com.speed.run.managers.Config;
 import com.speed.run.npc.NpcManager;
@@ -29,8 +32,10 @@ public class BusStopScreen extends BaseScreen {
 	protected Entity background;
 	protected BitmapFont font;
 	protected NpcManager npcManager;
+	protected TweenManager tweenManager;
 	
 	protected boolean pause = false;
+	protected boolean phoneLocked = false;
 	
 	public BusStopScreen(IndieSpeedRun game) {
 		super(game);
@@ -42,10 +47,15 @@ public class BusStopScreen extends BaseScreen {
 		font.scale(0.001f);
 		npcManager = new NpcManager();
 
+		// UI stuff for icons
 		setupUI();
 		
 		// start music
 		Assets.getInstance().getMusic("mainTheme").play();
+		
+		// TWEENS
+		tweenManager = new TweenManager();
+		Tween.registerAccessor(Phone.class, new PhoneAcessor());
 	}
 	
 	private void setupUI() {
@@ -58,9 +68,27 @@ public class BusStopScreen extends BaseScreen {
 		phone.addListener(new ChangeListener() {
 			@Override
 			public void changed(ChangeEvent event, Actor actor) {
-				boolean enabled = phone.isChecked();
-				if (!pause) {
-					Phone.getInstance().toggle(enabled);
+				final boolean enabled = phone.isChecked();
+				if (!pause && !phoneLocked) {
+					Phone.getInstance().close();
+					
+					float x = Config.PHONE_X;
+					float y = enabled ? Config.PHONE_Y_END:Config.PHONE_Y_INIT;
+					phoneLocked = true;
+					
+					Tween.to(Phone.getInstance(), PhoneAcessor.POSITION_XY, 0.5f)
+				    .target(x, y)
+				    .delay(enabled?0.0f:1.0f)
+				    .ease(Quad.INOUT)
+				    .setCallback(new TweenCallback() {
+						
+						@Override
+						public void onEvent(int type, BaseTween<?> source) {
+							Phone.getInstance().open();
+							phoneLocked = false;
+						}
+					})
+				    .start(tweenManager);
 				}
 			}
 		});
@@ -97,10 +125,11 @@ public class BusStopScreen extends BaseScreen {
 		money.addListener(new ChangeListener() {
 			@Override
 			public void changed(ChangeEvent event, Actor actor) {
-				boolean enabled = money.isChecked();
-				System.out.println(enabled);
+				baseTable.removeActor(money);
 			}
 		});
+		
+		
 	}
 	
 	Skin getSkin(Sprite sprite) {
@@ -146,6 +175,7 @@ public class BusStopScreen extends BaseScreen {
 		Gdx.gl.glClear(GL10.GL_COLOR_BUFFER_BIT);
 		
 		input();
+		tweenManager.update(delta);
 		Player.getInstance().update(delta);
 		Phone.getInstance().update(delta);
 		

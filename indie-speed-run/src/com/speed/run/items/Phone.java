@@ -8,10 +8,9 @@ public class Phone extends Item {
 	private static Phone instance = null;
 	private Phone() {
 		setPosition(Config.PHONE_X, Config.PHONE_Y_INIT);
-		moveTo(pos.x, pos.y);
-		speed = Config.PHONE_SPEED;
-		animations.put("idle", Assets.getInstance().getAnimation("bubble"));
-		setAnimation("idle");
+		animations.put("switchedOff", Assets.getInstance().getAnimation("phone"));
+		animations.put("idle", Assets.getInstance().getAnimation("phoneDisplay"));
+		setAnimation("switchedOff");
 	}
 	
 	public static Phone getInstance() {
@@ -25,11 +24,10 @@ public class Phone extends Item {
 	}
 	
 	public void open() {
-		moveTo(Config.PHONE_X, Config.PHONE_Y_END);
+		setAnimation("idle");
 	}
 	
 	public void close() {
-		moveTo(Config.PHONE_X, Config.PHONE_Y_INIT);
-		System.out.println("New target for " + getClass() + ": " + target);
+		setAnimation("switchedOff");
 	}
 }
