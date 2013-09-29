@@ -17,8 +17,8 @@ public class Player extends MoveableEntity {
 		super();
 		animations.put("idleLeft", Assets.getInstance().getAnimation("playerIdleLeft"));
 		animations.put("idleRight", Assets.getInstance().getAnimation("playerIdleRight"));
-		animations.put("playerWalkLeft", Assets.getInstance().getAnimation("playerWalkLeft"));
-		animations.put("playerWalkRight", Assets.getInstance().getAnimation("playerWalkRight"));
+		animations.put("walkLeft", Assets.getInstance().getAnimation("playerWalkLeft"));
+		animations.put("walkRight", Assets.getInstance().getAnimation("playerWalkRight"));
 		setFixed(Fixed.Y);
 		setPosition(0, Config.NPC_Y_POS);
 		moveTo(pos.x, pos.y);
@@ -28,8 +28,8 @@ public class Player extends MoveableEntity {
 	@Override
 	public void moveTo(float x, float y) {
 		left = x < pos.x;
-		if (left) setAnimation("playerWalkLeft");
-		else setAnimation("playerWalkRight");
+		if (left) setAnimation("walkLeft");
+		else setAnimation("walkRight");
 		super.moveTo(x, y);
 	}
 

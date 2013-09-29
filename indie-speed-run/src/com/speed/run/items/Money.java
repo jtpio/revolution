@@ -7,7 +7,9 @@ public class Money extends MoveableEntity {
 	
 	public Money() {
 		super();
-		animations.put("idle", Assets.getInstance().getAnimation("cash"));
+		animations.put("idle", Assets.getInstance().getAnimation("cashIcon"));
 		setAnimation("idle");
 	}
+	
+	
 }

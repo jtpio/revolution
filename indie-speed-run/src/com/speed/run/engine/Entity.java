@@ -2,6 +2,7 @@ package com.speed.run.engine;
 
 import java.util.HashMap;
 
+import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.g2d.Animation;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
@@ -15,6 +16,7 @@ public class Entity implements Drawable, Comparable<Entity> {
 	protected Vector2 animSize;
 	protected boolean left;
 	protected int depth;
+	protected float alpha;
 	
 	public Entity() {
 		Init();
@@ -28,12 +30,21 @@ public class Entity implements Drawable, Comparable<Entity> {
 		this.depth = f;
 	}
 
+	public float getAlpha() {
+		return alpha;
+	}
+
+	public void setAlpha(float alpha) {
+		this.alpha = alpha;
+	}
+
 	private void Init() {
 		pos = new Vector2();
 		animSize = new Vector2();
 		animations = new HashMap<String, Animation>();
 		stateTime = 0;
 		left = false;
+		alpha = 1.0f;
 	}
 	
 	public void setAnimation(String animName) {
@@ -59,7 +70,10 @@ public class Entity implements Drawable, Comparable<Entity> {
 	@Override
 	public void draw(SpriteBatch batch) {
 		TextureRegion tr = animation.getKeyFrame(stateTime);
+		Color prev = batch.getColor();
+		batch.setColor(prev.r, prev.g, prev.b, prev.a * alpha);
 		batch.draw(tr, pos.x - animSize.x / 2, pos.y - animSize.y / 2, animSize.x, animSize.y);
+		batch.setColor(prev);
 	}
 
 	public Vector2 getPosition() {
@@ -72,6 +86,16 @@ public class Entity implements Drawable, Comparable<Entity> {
 
 	public void setPosition(float x, float y) {
 		pos.set(x, y);
+	}
+	
+	
+	
+	public Vector2 getAnimSize() {
+		return animSize;
+	}
+
+	public void setAnimSize(float x, float y) {
+		this.animSize.set(x, y);
 	}
 
 	@Override

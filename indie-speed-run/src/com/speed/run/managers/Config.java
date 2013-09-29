@@ -8,6 +8,7 @@ public class Config {
 	public static final int HEIGHT = 600;
 	
 	public static final float INIT_SPEED = 2.5f;
+	public static final float MAX_SPEED = 5.5f;
 	public static final float DIST_EPSI = 10;
 	public static final float NPC_Y_POS = -120;
 	
@@ -27,7 +28,7 @@ public class Config {
 	
 	// bubbles
 	public static final float BUBBLE_Y_OFFSET = 120;
-	public static final float SENTENCE_DURATION = 1.5f; // s
+	public static final float SENTENCE_DURATION = 3f; // s
 	public static final float MAX_SCALE = 4f;
 	public static final float MAX_DISTANCE = 200;
 	public static final float DEFAULT_FONT_SCALE = 1.0f;
@@ -48,7 +49,11 @@ public class Config {
 	public static final float MIN_TIME_BUS_COMES = 10.0f; // 60s
 	public static final float MAX_TIME_BUS_COMES = 20.0f; // 120s
 	public static final float WAITING_TIME_STOP = 5; // s
-	public static final float INIT_POS_X_BUS = 1000;
-	public static final float END_POS_X_BUS = -1000;
-	public static final float POS_Y_BUS = -200;
+	public static final float INIT_POS_X_BUS = 1500;
+	public static final float END_POS_X_BUS = -1500;
+	public static final float POS_Y_BUS = -150;
+	
+	// Panel
+	public static final float PANEL_X = -250;
+	public static final float PANEL_Y = -55;
 }

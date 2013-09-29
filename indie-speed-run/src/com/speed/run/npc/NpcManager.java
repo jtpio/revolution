@@ -8,6 +8,7 @@ import aurelienribon.tweenengine.BaseTween;
 import aurelienribon.tweenengine.Timeline;
 import aurelienribon.tweenengine.Tween;
 import aurelienribon.tweenengine.TweenCallback;
+import aurelienribon.tweenengine.equations.Quad;
 import aurelienribon.tweenengine.equations.Quint;
 
 import com.badlogic.gdx.Gdx;
@@ -21,6 +22,7 @@ import com.speed.run.dialog.Sentence;
 import com.speed.run.engine.MoveableEntity;
 import com.speed.run.engine.Renderer;
 import com.speed.run.engine.Util;
+import com.speed.run.items.BusSign;
 import com.speed.run.managers.Assets;
 import com.speed.run.managers.Config;
 import com.speed.run.tweens.MoveableEntityAccessor;
@@ -41,6 +43,7 @@ public class NpcManager {
 	private float nextBus;
 	private float nextSpawn;
 	
+	private BusSign busSign;
 	private MoveableEntity bus;
 	
 	public NpcManager() {
@@ -74,6 +77,13 @@ public class NpcManager {
 		bus.addAnimation("idle", Assets.getInstance().getAnimation("bus"));
 		bus.setDepth(150);
 		Renderer.getInstance().addEntity(bus);
+		
+		busSign = new BusSign();
+		busSign.setPosition(Config.PANEL_X, Config.PANEL_Y);
+		busSign.setDepth(149);
+		Renderer.getInstance().addEntity(busSign);
+		
+		busSign.setWaitingTime(MathUtils.random(2, 15));
 	}
 	
 	public void update(float dt) {
@@ -84,6 +94,11 @@ public class NpcManager {
 			nextSpawn();
 		}
 		
+		if (busTimer > 5) {
+			busTimer = 0;
+			busSign.setWaitingTime(MathUtils.random(2, 15));
+		}
+		
 		Iterator<Npc> iterator = npcs.iterator();
 		while (iterator.hasNext()) {
 			Npc npc = iterator.next();
@@ -91,6 +106,7 @@ public class NpcManager {
 		}
 		
 		if (busTimer > nextBus) {
+			busSign.setWaitingTime(MathUtils.random(2, 15));
 			nextBus();
 			Timeline.createSequence()
 				.push(Tween.to(bus, MoveableEntityAccessor.POSITION_XY, 1.0f).target(0, bus.getPosition().y).ease(Quint.OUT).setCallback(new TweenCallback() {
@@ -145,11 +161,14 @@ public class NpcManager {
 			npc = new Npc();
 		}
 		
+		// setting a speed
+		npc.setSpeed(MathUtils.random(Config.INIT_SPEED, Config.MAX_SPEED));
+		
 		int layer = MathUtils.random(0, Config.NB_LAYERS);
 		npc.setDepth(Config.START_DEPTH - layer);
 		float newY = Config.NPC_Y_POS + Config.DEPTH_INCR * layer;
 		Vector2 nPos = new Vector2(Util.randomSign() * Config.X_SPAWN, newY);
-		Vector2 nTarget = new Vector2(MathUtils.random(-Config.WIDTH/2, Config.HEIGHT/2), newY);
+		Vector2 nTarget = new Vector2(MathUtils.random(-Config.WIDTH * 0.5f * 1.1f, Config.WIDTH * 0.5f * 1.1f), newY);
 		npc.setPosition(nPos.x, nPos.y);
 		npc.moveTo(nTarget.x, nTarget.y);
 		
@@ -157,10 +176,11 @@ public class NpcManager {
 			npc2.setPosition(nPos.x + Config.DISTANCE_DIALOG, nPos.y);
 			npc2.moveTo(nTarget.x + Config.DISTANCE_DIALOG, nTarget.y);
 			npc2.setDepth(Config.START_DEPTH - layer);
+			npc2.setSpeed(npc.getSpeed());
 			npcs.add(npc2);
 			Renderer.getInstance().addEntity(npc2);
 		}
-
+		
 		npcs.add(npc);
 		Renderer.getInstance().addEntity(npc);
 		

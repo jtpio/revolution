@@ -1,6 +1,7 @@
 package com.speed.run.screens;
 
 import aurelienribon.tweenengine.BaseTween;
+import aurelienribon.tweenengine.Timeline;
 import aurelienribon.tweenengine.Tween;
 import aurelienribon.tweenengine.TweenCallback;
 import aurelienribon.tweenengine.equations.Quad;
@@ -21,11 +22,13 @@ import com.speed.run.IndieSpeedRun;
 import com.speed.run.Player;
 import com.speed.run.engine.Entity;
 import com.speed.run.engine.Renderer;
+import com.speed.run.items.Money;
 import com.speed.run.items.Phone;
 import com.speed.run.managers.Assets;
 import com.speed.run.managers.Config;
 import com.speed.run.npc.NpcManager;
 import com.speed.run.tweens.BaseScreenAccessor;
+import com.speed.run.tweens.MoveableEntityAccessor;
 import com.speed.run.tweens.PhoneAcessor;
 
 public class BusStopScreen extends BaseScreen {
@@ -140,6 +143,21 @@ public class BusStopScreen extends BaseScreen {
 			@Override
 			public void changed(ChangeEvent event, Actor actor) {
 				baseTable.removeActor(money);
+				Money moneySprite = new Money();
+				moneySprite.setDepth(190);
+				Renderer.getInstance().addEntity(moneySprite);
+				moneySprite.setPosition(Player.getInstance().getPosition().x, Player.getInstance().getPosition().y);
+				
+				Timeline.createSequence()
+						.beginParallel()
+							.push(Tween.to(moneySprite, MoveableEntityAccessor.SCALE_XY, 1.0f)
+								    .target(10000.0f, 10000.0f)
+								    .ease(Quad.IN))
+							.push(Tween.to(moneySprite, MoveableEntityAccessor.ALPHA, 1.0f)
+								    .target(0.0f)
+								    .ease(Quad.IN))
+						.end()
+						.start(IndieSpeedRun.tweenManager);
 			}
 		});
 		

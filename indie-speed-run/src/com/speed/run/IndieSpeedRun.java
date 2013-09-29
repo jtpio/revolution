@@ -5,6 +5,7 @@ import aurelienribon.tweenengine.TweenManager;
 
 import com.badlogic.gdx.Game;
 import com.badlogic.gdx.Screen;
+import com.badlogic.gdx.graphics.g2d.BitmapFont;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.speed.run.engine.MoveableEntity;
 import com.speed.run.items.Phone;
@@ -14,6 +15,7 @@ import com.speed.run.screens.HomeScreen;
 import com.speed.run.screens.InBusScreen;
 import com.speed.run.screens.SplashScreen;
 import com.speed.run.tweens.BaseScreenAccessor;
+import com.speed.run.tweens.BitMapFontAccessor;
 import com.speed.run.tweens.MoveableEntityAccessor;
 import com.speed.run.tweens.PhoneAcessor;
 
@@ -43,6 +45,7 @@ public class IndieSpeedRun extends Game {
 		Tween.registerAccessor(Phone.class, new PhoneAcessor());
 		Tween.registerAccessor(MoveableEntity.class, new MoveableEntityAccessor());
 		Tween.registerAccessor(BaseScreen.class, new BaseScreenAccessor());
+		Tween.registerAccessor(BitmapFont.class, new BitMapFontAccessor());
 		
 		batch = new SpriteBatch();
 		setScreen(new SplashScreen(this));
