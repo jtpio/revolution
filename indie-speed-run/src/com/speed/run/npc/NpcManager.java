@@ -2,7 +2,6 @@ package com.speed.run.npc;
 
 import java.util.ArrayList;
 import java.util.Iterator;
-import java.util.LinkedList;
 
 import aurelienribon.tweenengine.BaseTween;
 import aurelienribon.tweenengine.Timeline;
@@ -10,16 +9,12 @@ import aurelienribon.tweenengine.Tween;
 import aurelienribon.tweenengine.TweenCallback;
 import aurelienribon.tweenengine.equations.Quint;
 
-import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.math.MathUtils;
 import com.badlogic.gdx.math.Vector2;
-import com.badlogic.gdx.utils.JsonReader;
-import com.badlogic.gdx.utils.JsonValue;
 import com.badlogic.gdx.utils.Timer;
 import com.badlogic.gdx.utils.Timer.Task;
 import com.speed.run.IndieSpeedRun;
-import com.speed.run.dialog.Sentence;
 import com.speed.run.engine.MoveableEntity;
 import com.speed.run.engine.Renderer;
 import com.speed.run.engine.Util;
@@ -27,12 +22,31 @@ import com.speed.run.items.BusSign;
 import com.speed.run.managers.Assets;
 import com.speed.run.managers.Config;
 import com.speed.run.managers.Dialogs;
+import com.speed.run.screens.OnBusThreeMissed;
 import com.speed.run.tweens.MoveableEntityAccessor;
 
 public class NpcManager {
 	
 	private ArrayList<Npc> npcs;
 	private ArrayList<Pair> pairs;
+	private int current = 0;
+	public static int nbBus = 0;
+	private OnBusThreeMissed onBusThreeMissed;
+	
+	public OnBusThreeMissed getOnBusThreeMissed() {
+		return onBusThreeMissed;
+	}
+
+	public void setOnBusThreeMissed(OnBusThreeMissed onBusThreeMissed) {
+		this.onBusThreeMissed = onBusThreeMissed;
+	}
+
+	private float[][] spots = {
+			{-0.8f * Config.WIDTH/2, -Config.WIDTH/3},
+			{Config.WIDTH/4, 0.8f * Config.WIDTH/2}
+	};
+	
+	private String[] names = {"catlady", "bro1", "bro2", "lady", "phoneGuy"};
 	
 	private BusSign busSign;
 	private MoveableEntity bus;
@@ -47,16 +61,14 @@ public class NpcManager {
 	}
 	
 	public boolean isBusHere() {
-		return bus.getPosition().x == 0;
+		return Math.abs(bus.getPosition().x) < 100;
 	}
 	
 	public void reset() {
 		npcs = new ArrayList<Npc>();
-		pairs = new ArrayList<Pair>();
+		pairs = new ArrayList<Pair>(Dialogs.getInstance().getPairs());
 		
 		// retrieve pairs
-		pairs = Dialogs.getInstance().getPairs();
-		
 		bus = new MoveableEntity();
 		bus.setPosition(Config.INIT_POS_X_BUS, Config.POS_Y_BUS);
 		bus.addAnimation("idle", Assets.getInstance().getAnimation("bus"));
@@ -68,37 +80,36 @@ public class NpcManager {
 		busSign.setDepth(149);
 		Renderer.getInstance().addEntity(busSign);
 		
-		
-		
 		busTimer = new Timer();
-		busTimer.scheduleTask(new Task() {
-			@Override
-			public void run() {
-				showBus();
-				busTimer.delay((long) MathUtils.random(Config.MIN_TIME_BUS_COMES, Config.MAX_TIME_BUS_COMES));
-			}
-		}, Config.MIN_TIME_BUS_COMES, 10);
-		busTimer.start();
 		
 		spawnTimer = new Timer();
 		spawnTimer.scheduleTask(new Task() {
 			@Override
 			public void run() {
-				add();
+				add(current);
 			}
-		}, 0, Config.SPAWN_INTERVAL);
-		spawnTimer.start();
+		}, Config.FIRST_SPAWN, Config.SPAWN_INTERVAL);
 		
 		busSignTimer = new Timer();
 		busSignTimer.scheduleTask(new Task() {
 			@Override
 			public void run() {
 				busSign.setWaitingTime(MathUtils.random(2, 15));
-				busSignTimer.delay(MathUtils.random(10, 20));
 			}
-		}, 0, 5);
-		busSignTimer.start();
+		}, 0, MathUtils.random(10, 20));
 		
+	}
+	
+	public void toggleTimers(boolean pause) {
+		if (pause) {
+			busTimer.stop();
+			busSignTimer.stop();
+			spawnTimer.stop();
+		} else {
+			busTimer.start();
+			busSignTimer.start();
+			spawnTimer.start();
+		}
 	}
 	
 	public void update(float dt) {		
@@ -110,9 +121,11 @@ public class NpcManager {
 	}
 	
 	private void showBus() {
+		nbBus++;
 		busSign.setWaitingTime(MathUtils.random(2, 15));
+		Assets.getInstance().getSound("bus").play(Config.HALF_VOLUME);
 		Timeline.createSequence()
-			.push(Tween.to(bus, MoveableEntityAccessor.POSITION_XY, 1.0f).target(0, bus.getPosition().y).ease(Quint.OUT).setCallback(new TweenCallback() {
+			.push(Tween.to(bus, MoveableEntityAccessor.POSITION_XY, Config.BUS_TRIP_LANDING).target(0, bus.getPosition().y).ease(Quint.OUT).setCallback(new TweenCallback() {
 				
 				@Override
 				public void onEvent(int type, BaseTween<?> source) {
@@ -124,11 +137,11 @@ public class NpcManager {
 				}
 			}))
 			.pushPause(Config.WAITING_TIME_STOP)
-			.push(Tween.to(bus, MoveableEntityAccessor.POSITION_XY, 1.0f).target(Config.END_POS_X_BUS, bus.getPosition().y).ease(Quint.IN).setCallback(new TweenCallback() {
+			.push(Tween.to(bus, MoveableEntityAccessor.POSITION_XY, Config.BUS_TRIP_LEAVING).target(Config.END_POS_X_BUS, bus.getPosition().y).ease(Quint.IN).setCallback(new TweenCallback() {
 				
 				@Override
 				public void onEvent(int type, BaseTween<?> source) {
-					bus.setPosition(Config.INIT_POS_X_BUS, Config.POS_Y_BUS);	
+					bus.setPosition(Config.INIT_POS_X_BUS, Config.POS_Y_BUS);
 				}
 			}))
 			.start(IndieSpeedRun.tweenManager);
@@ -143,71 +156,67 @@ public class NpcManager {
 		bus.draw(batch);
 	}
 	
-	public void add() {
-		if (npcs.size() >= Config.MAX_NB) return;
-		// TODO: choose random animation
-		
-		Npc npc = null;
-		Npc npc2 = null;
-		if (Math.random() > 0 && pairs.size() > 0) {
-			int dudes = (int)Math.random() * pairs.size();
-			Pair pair = pairs.remove(dudes);
-			
-			npc = new TalkingNpc("bro1", pair.getFirst());
-			if (pair.getSecond() != null) {
-				npc2 = new TalkingNpc("bro1", pair.getSecond());
+	// add a new wave
+	public void add(int nbDialogs) {
+				
+		for (Npc npc: npcs) {
+			if (npc instanceof TalkingNpc) {
+				TalkingNpc tnpc = (TalkingNpc) npc;
+				if (tnpc.isSpeaking()) return;
 			}
-		} else {
-			npc = new Npc("bro1");
 		}
 		
-		// setting a speed
+		current++;
+		
+		if (current == 3) {
+			showBus();
+			current = 0;
+			return;
+		}
+		
+		// bunch of random guys
+		for (int i = 0; i < Config.MAX_RANDOM_GUYS; i++) {
+			String name = getRandomName();
+			Npc npc = new Npc(name);
+			randomGuy(npc, -Config.WIDTH * 0.25f, Config.WIDTH * 0.25f);
+			npcs.add(npc);
+		}
+		
+		for (int i = 0; i < nbDialogs; i++) {
+			if (pairs.size() == 0) continue;
+			int dudes = (int)Math.random() * pairs.size();
+			Pair pair = pairs.remove(dudes);
+			TalkingNpc npc = new TalkingNpc(pair.getFirstName(), pair.getFirst());
+			randomGuy(npc, spots[i][0], spots[i][1]);
+			npcs.add(npc);
+			TalkingNpc npc2 = null;
+			if (pair.getSecond() != null) {
+				npc2 = new TalkingNpc(pair.getSecondName(), pair.getSecond());
+				randomGuy(npc2, spots[i][0], spots[i][1]);
+				npc2.setPosition(npc.getPosition().x + 50.0f, npc.getPosition().y);
+				npc2.setSpeed(npc.getSpeed());
+				npc2.setDepth(npc.getDepth());
+				npc2.moveTo(npc.getTarget().x + 50.0f, npc2.getTarget().y);
+				npcs.add(npc2);
+			}
+		}
+	}
+	
+	private String getRandomName() {
+		return names[MathUtils.random(0, names.length-1)];
+	}
+	
+	private void randomGuy(Npc npc, float xMin, float xMax) {
 		npc.setSpeed(MathUtils.random(Config.INIT_SPEED, Config.MAX_SPEED));
 		
 		int layer = MathUtils.random(0, Config.NB_LAYERS);
 		npc.setDepth(Config.START_DEPTH - layer);
 		float newY = Config.NPC_Y_POS + Config.DEPTH_INCR * layer;
 		Vector2 nPos = new Vector2(Util.randomSign() * Config.X_SPAWN, newY);
-		Vector2 nTarget = new Vector2(MathUtils.random(-Config.WIDTH * 0.5f * 1.1f, Config.WIDTH * 0.5f * 1.1f), newY);
+		Vector2 nTarget = new Vector2(MathUtils.random(xMin, xMax), newY);
 		npc.setPosition(nPos.x, nPos.y);
 		npc.moveTo(nTarget.x, nTarget.y);
-		
-		if (npc2 != null) {
-			npc2.setPosition(nPos.x + Config.DISTANCE_DIALOG, nPos.y);
-			npc2.moveTo(nTarget.x + Config.DISTANCE_DIALOG, nTarget.y);
-			npc2.setDepth(Config.START_DEPTH - layer);
-			npc2.setSpeed(npc.getSpeed());
-			npcs.add(npc2);
-			Renderer.getInstance().addEntity(npc2);
-		}
-		
-		npcs.add(npc);
 		Renderer.getInstance().addEntity(npc);
-		
-	}
-	
-	private void loadDialogs(String jsonFile) {
-		JsonReader jsonReader = new JsonReader();
-		JsonValue root = jsonReader.parse(Gdx.files.internal(jsonFile));
-		int n = root.getInt("n");
-		LinkedList<Sentence> firstList = new LinkedList<Sentence>();
-		LinkedList<Sentence> secondList = null;
-		String firstName = root.getString("first");
-		String secondName = null;
-		if (n == 2) {
-			secondList = new LinkedList<Sentence>();
-			secondName = root.getString("second");
-		}
-		JsonValue dialogs = root.get("dialogs");
-		for (int i = 0; i < dialogs.size; i++) {
-			JsonValue v = dialogs.get(i);
-			Sentence s = new Sentence(i * (Config.SENTENCE_DURATION + Config.PAUSE), Config.SENTENCE_DURATION, v.getString(1));
-			
-			if (v.getInt(0) == 0) firstList.add(s);
-			else secondList.add(s);
-		}
-		
-		pairs.add(new Pair(firstList, secondList, firstName, secondName));
 	}
 	
 	public void removeRandom() {

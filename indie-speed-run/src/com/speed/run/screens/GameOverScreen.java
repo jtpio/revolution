@@ -6,18 +6,19 @@ import com.speed.run.IndieSpeedRun;
 import com.speed.run.engine.Entity;
 import com.speed.run.managers.Assets;
 
-public class InBusScreen extends BaseScreen {
+public class GameOverScreen extends BaseScreen {
 
 	private Entity busBG;
 	
-	public InBusScreen(IndieSpeedRun game) {
+	public GameOverScreen(IndieSpeedRun game) {
 		super(game);
 				
 		busBG = new Entity();
-		busBG.addAnimation("idleLeft", Assets.getInstance().getAnimation("finish"));
+		busBG.addAnimation("idleLeft", Assets.getInstance().getAnimation("gameover"));
 		busBG.setAnimation("idleLeft");
 		busBG.setPosition(0, 0);
 		busBG.setDepth(110);
+
 	}
 	
 	@Override
@@ -25,7 +26,7 @@ public class InBusScreen extends BaseScreen {
 		super.show();
 		Assets.getInstance().getMusic("mainTheme").stop();
 		Assets.getInstance().getMusic("walkman").stop();
-		Assets.getInstance().getMusic("themeUpbeat").play();
+		Assets.getInstance().getMusic("gameOverTheme").play();
 	}
 
 	@Override

@@ -1,7 +1,6 @@
 package com.speed.run.screens;
 
 import aurelienribon.tweenengine.BaseTween;
-import aurelienribon.tweenengine.Timeline;
 import aurelienribon.tweenengine.Tween;
 import aurelienribon.tweenengine.TweenCallback;
 import aurelienribon.tweenengine.equations.Quad;
@@ -9,26 +8,34 @@ import aurelienribon.tweenengine.equations.Quad;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.GL10;
+import com.badlogic.gdx.graphics.Pixmap.Format;
 import com.badlogic.gdx.graphics.g2d.BitmapFont;
 import com.badlogic.gdx.graphics.g2d.Sprite;
+import com.badlogic.gdx.graphics.g2d.TextureRegion;
+import com.badlogic.gdx.graphics.glutils.FrameBuffer;
+import com.badlogic.gdx.graphics.glutils.ShaderProgram;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.math.Vector3;
 import com.badlogic.gdx.scenes.scene2d.Actor;
+import com.badlogic.gdx.scenes.scene2d.InputEvent;
+import com.badlogic.gdx.scenes.scene2d.ui.Button;
 import com.badlogic.gdx.scenes.scene2d.ui.CheckBox;
+import com.badlogic.gdx.scenes.scene2d.ui.Button.ButtonStyle;
 import com.badlogic.gdx.scenes.scene2d.ui.CheckBox.CheckBoxStyle;
 import com.badlogic.gdx.scenes.scene2d.ui.Skin;
 import com.badlogic.gdx.scenes.scene2d.utils.ChangeListener;
+import com.badlogic.gdx.scenes.scene2d.utils.ClickListener;
 import com.speed.run.IndieSpeedRun;
 import com.speed.run.Player;
 import com.speed.run.engine.Entity;
 import com.speed.run.engine.Renderer;
-import com.speed.run.items.Money;
 import com.speed.run.items.Phone;
 import com.speed.run.managers.Assets;
 import com.speed.run.managers.Config;
 import com.speed.run.npc.NpcManager;
 import com.speed.run.tweens.BaseScreenAccessor;
-import com.speed.run.tweens.MoveableEntityAccessor;
+import com.speed.run.tweens.BlurAccessor;
+import com.speed.run.tweens.CameraAccessor;
 import com.speed.run.tweens.PhoneAcessor;
 
 public class BusStopScreen extends BaseScreen {
@@ -37,10 +44,19 @@ public class BusStopScreen extends BaseScreen {
 	protected Entity background;
 	protected BitmapFont font;
 	protected NpcManager npcManager;
-	
+
 	protected boolean pause = false;
 	protected boolean stop = false;
 	protected boolean phoneLocked = false;
+	protected boolean intro = true;
+	
+	protected ShaderProgram shaderProgram;
+	protected FrameBuffer blurTargetA, blurTargetB;
+	protected TextureRegion fboRegion;
+	
+	public static final int FBO_SIZE = 1024;
+	public static final float MAX_BLUR = 2.0f;
+	protected Blur blur = new Blur();
 	
 	public BusStopScreen(IndieSpeedRun game) {
 		super(game);
@@ -59,12 +75,13 @@ public class BusStopScreen extends BaseScreen {
 		busstop.setPosition(0, -60);
 		busstop.setDepth(120);
 		
+		
 		font = Assets.getInstance().getFont("normal");
 		font.scale(0.001f);
 		npcManager = new NpcManager();
 
 		// UI stuff for icons
-		setupUI();
+		//setupUI();
 		
 		// rendering
 		Renderer.getInstance().addEntity(background);
@@ -74,12 +91,58 @@ public class BusStopScreen extends BaseScreen {
 		
 		// start music
 		Assets.getInstance().getMusic("mainTheme").play();
+		
+		Tween.to(camera, CameraAccessor.POSITION_Y, Config.CAMERA_MOVING)
+			 .target(0)
+			 .delay(5.0f)
+			 .start(IndieSpeedRun.tweenManager)
+			 .setCallback(new TweenCallback() {
+				
+				@Override
+				public void onEvent(int type, BaseTween<?> source) {
+					setupUI();
+					intro = false;
+				}
+			});
+		
+		npcManager.setOnBusThreeMissed(new OnBusThreeMissed() {
+			
+			@Override
+			public void lose() {
+				switchToFailScreen();
+			}
+		});
+		
+		ShaderProgram.pedantic = false;
+		shaderProgram = new ShaderProgram(Gdx.files.internal("data/shaders/blur.vert"), Gdx.files.internal("data/shaders/blur.frag"));
+		//shaderProgram = new ShaderProgram(VERT, FRAG);
+		
+		if (!shaderProgram.isCompiled()) {
+			System.err.println(shaderProgram.getLog());
+			System.exit(0);
+		}
+		if (shaderProgram.getLog().length()!=0)
+			System.out.println(shaderProgram.getLog());
+		
+		shaderProgram.begin();
+		shaderProgram.setUniformf("dir", 0f, 0f);
+		shaderProgram.setUniformf("resolution", Gdx.graphics.getWidth());
+		shaderProgram.setUniformf("radius", 1f);
+		shaderProgram.end();
+		
+		blurTargetA = new FrameBuffer(Format.RGBA8888, Gdx.graphics.getWidth(), Gdx.graphics.getHeight(), false);
+		blurTargetB = new FrameBuffer(Format.RGBA8888, Gdx.graphics.getWidth(), Gdx.graphics.getHeight(), false);
+		fboRegion = new TextureRegion(blurTargetA.getColorBufferTexture());
+		fboRegion.flip(false, true);
+		
+		camera.setToOrtho(false);
+		camera.zoom = 1.0f;
 	}
-	
+
 	private void setupUI() {
 		baseTable.pad(Config.ITEM_PADDING);
 		baseTable.top().left();
-		
+
 		// phone
 		final CheckBox phone = new CheckBox("", getSkin(Assets.getInstance().getSprites("phoneIcon")));
 		baseTable.add(phone).width(Config.ICON_SIZE).height(Config.ICON_SIZE);
@@ -94,6 +157,8 @@ public class BusStopScreen extends BaseScreen {
 					float y = enabled ? Config.PHONE_Y_END:Config.PHONE_Y_INIT;
 					phoneLocked = true;
 					
+					if (!enabled) Assets.getInstance().getSound("phone").play(Config.HALF_VOLUME);
+					
 					Tween.to(Phone.getInstance(), PhoneAcessor.POSITION_XY, 0.5f)
 				    .target(x, y)
 				    .delay(enabled?0.0f:1.0f)
@@ -104,6 +169,7 @@ public class BusStopScreen extends BaseScreen {
 						public void onEvent(int type, BaseTween<?> source) {
 							Phone.getInstance().open();
 							phoneLocked = false;
+							if (enabled) Assets.getInstance().getSound("phone").play();
 						}
 					})
 				    .start(IndieSpeedRun.tweenManager);
@@ -117,31 +183,40 @@ public class BusStopScreen extends BaseScreen {
 		ipod.addListener(new ChangeListener() {
 			@Override
 			public void changed(ChangeEvent event, Actor actor) {
-				boolean enabled = ipod.isChecked();
+				Assets.getInstance().getSound("itemClick").play();
 				pause = !pause;
-			}
-		});
-		
-		// cigarettes
-		final CheckBox cigarettes = new CheckBox("", getSkin(Assets.getInstance().getSprites("cigarettesIcon")));
-		baseTable.add(cigarettes).width(Config.ICON_SIZE).height(Config.ICON_SIZE);
-		cigarettes.addListener(new ChangeListener() {
-			@Override
-			public void changed(ChangeEvent event, Actor actor) {
-				boolean enabled = cigarettes.isChecked();
-				if (!pause) {
-					// TODO
-					System.out.println(enabled);
+				
+				if (pause) {
+					Assets.getInstance().getMusic("mainTheme").stop();
+					Assets.getInstance().getMusic("walkman").stop();
+					Assets.getInstance().getMusic("walkman").play();
+					
+					Tween.to(blur, BlurAccessor.BLUR_AMOUNT, 1.0f)
+					 .target(1.0f)
+					 .start(IndieSpeedRun.tweenManager);
+					
+				} else {
+					Assets.getInstance().getMusic("walkman").stop();
+					Assets.getInstance().getMusic("walkman").stop();
+					Assets.getInstance().getMusic("mainTheme").play();
+					
+					Tween.to(blur, BlurAccessor.BLUR_AMOUNT, 1.0f)
+					 .target(0.0f)
+					 .start(IndieSpeedRun.tweenManager);
 				}
+				
+				npcManager.toggleTimers(pause);
 			}
 		});
 		
+		/*
 		// money
 		final CheckBox money = new CheckBox("", getSkin(Assets.getInstance().getSprites("cashIcon")));
 		baseTable.add(money).width(Config.ICON_SIZE).height(Config.ICON_SIZE);
 		money.addListener(new ChangeListener() {
 			@Override
 			public void changed(ChangeEvent event, Actor actor) {
+				Assets.getInstance().getSound("itemClick").play();
 				baseTable.removeActor(money);
 				Money moneySprite = new Money();
 				moneySprite.setDepth(190);
@@ -160,28 +235,32 @@ public class BusStopScreen extends BaseScreen {
 						.start(IndieSpeedRun.tweenManager);
 			}
 		});
+		*/
 		
-		// money
-		final CheckBox busTicket = new CheckBox("", getSkin(Assets.getInstance().getSprites("cashIcon")));
+		// bus ticket
+		final Button busTicket = new Button(getButtonSkin(Assets.getInstance().getSprites("ticketIcon")));
 		baseTable.add(busTicket).width(Config.ICON_SIZE).height(Config.ICON_SIZE);
-		busTicket.addListener(new ChangeListener() {
+		busTicket.addListener(new ClickListener() {
+
 			@Override
-			public void changed(ChangeEvent event, Actor actor) {
-				baseTable.removeActor(busTicket);
+			public void clicked(InputEvent event, float x, float y) {
 				if (npcManager.isBusHere()) {
+					baseTable.removeActor(busTicket);
 					pause = true;
-					Tween.to(game.getBusStopScreen(), BaseScreenAccessor.ALPHA, 2.0f)
-					 .target(0.0f)
-					 .setCallback(new TweenCallback() {
-						
-						@Override
-						public void onEvent(int type, BaseTween<?> source) {
-							game.setScreen(game.getInBusScreen());
-						}
-					})
-					 .start(IndieSpeedRun.tweenManager);
+					
+					Player.getInstance().setPosition(0, 3000);
+					
+					if (npcManager.nbBus == Config.BUS_NBR) {
+						IndieSpeedRun.win = true;
+						switchToSuccessScreen();
+					} else {
+						IndieSpeedRun.win = false;
+						switchToFailScreen();
+					}
 				}
+				super.clicked(event, x, y);
 			}
+			
 		});
 	}
 	
@@ -199,40 +278,103 @@ public class BusStopScreen extends BaseScreen {
 		return skin;
 		
 	}
+	
+	Skin getButtonSkin(Sprite sprite) {
+		Skin skin = new Skin();		
+		skin.add("white", sprite);
+		skin.add("default", Assets.getInstance().getFont("normal"));
+		ButtonStyle cbs = new ButtonStyle();
+		cbs.up = skin.newDrawable("white");
+		skin.add("default", cbs);
+		
+		return skin;
+		
+	}
 
-	@Override
-	public void render(float delta) {
-		Gdx.gl.glClearColor(1f, 1f, 1f, 1);
-		Gdx.gl.glClear(GL10.GL_COLOR_BUFFER_BIT);
-		
-		
-		if (!stop) {
-			input();
-			IndieSpeedRun.tweenManager.update(delta);
-			Player.getInstance().update(delta);
-			Phone.getInstance().update(delta);
-		
-			if (!pause) {		
-				//camera.position.set(Player.getInstance().getPos().x, Player.getInstance().getPos().y, 0);
-				npcManager.update(delta);
-				//camera.translate(0, 1);
-				camera.update();
+	private void switchToSuccessScreen() {
+		Tween.to(game.getBusStopScreen(), BaseScreenAccessor.ALPHA, 2.0f)
+		 .target(0.9f)
+		 .setCallback(new TweenCallback() {
+			
+			@Override
+			public void onEvent(int type, BaseTween<?> source) {
+				game.setScreen(game.getInBusScreen());
 			}
+		})
+		 .start(IndieSpeedRun.tweenManager);
+	}
+	
+	private void switchToFailScreen() {
+		Tween.to(game.getBusStopScreen(), BaseScreenAccessor.ALPHA, 2.0f)
+		 .target(0.9f)
+		 .setCallback(new TweenCallback() {
+			
+			@Override
+			public void onEvent(int type, BaseTween<?> source) {
+				game.setScreen(game.getGameOverScreen());
+			}
+		})
+		 .start(IndieSpeedRun.tweenManager);
+	}
+	
+	void resizeBatch(int width, int height) {
+		//camera.setToOrtho(false, width, height);
+		batch.setProjectionMatrix(camera.combined);
+	}
+	
+	@Override
+	public void render(float delta) {		
+		if (!stop) {
+			IndieSpeedRun.tweenManager.update(delta);
+			
+			if (!intro) {
+				input();
+				Player.getInstance().update(delta);
+				Phone.getInstance().update(delta);
+			
+				if (!pause) {
+					npcManager.update(delta);
+				}
+			}
+			camera.update();
 		}
 		
 		// rendering
-		batch.setProjectionMatrix(camera.combined);
+
+		blurTargetA.begin();
+		batch.setShader(null);
+		resizeBatch(Gdx.graphics.getWidth(), Gdx.graphics.getHeight());
+
 		batch.begin();
+		Renderer.getInstance().render(batch, true);
+		batch.flush();
 		
-		Renderer.getInstance().render(batch, pause, alpha);
-		/*background.draw(batch);
-		busstop.draw(batch);
-		npcManager.render(batch);*/
-	/*	Player.getInstance().draw(batch);
-		Phone.getInstance().draw(batch);*/
-	/*	font.draw(batch, Strings.WAITING_TIME,
-				-150 -font.getBounds(Strings.WAITING_TIME).width / 2,
-				150 -font.getBounds(Strings.WAITING_TIME).height / 2);*/
+		blurTargetA.end();
+		
+		Gdx.gl.glClearColor(0.5f, 0.5f, 0.5f, 1f);
+		Gdx.gl.glClear(GL10.GL_COLOR_BUFFER_BIT);
+		
+		batch.setShader(shaderProgram);
+		shaderProgram.setUniformf("dir", 1f, 0f);
+		shaderProgram.setUniformf("radius", blur.getAmount() * MAX_BLUR);
+		
+		blurTargetB.begin();
+		fboRegion.setTexture(blurTargetA.getColorBufferTexture());
+		batch.draw(fboRegion, camera.position.x-blurTargetA.getWidth()/2, camera.position.y-blurTargetA.getHeight()/2);
+		batch.flush();
+		blurTargetB.end();
+		
+		resizeBatch(Gdx.graphics.getWidth(), Gdx.graphics.getHeight());
+		shaderProgram.setUniformf("dir", 0f, 1f);
+		shaderProgram.setUniformf("radius", blur.getAmount() * MAX_BLUR);
+
+		fboRegion.setTexture(blurTargetB.getColorBufferTexture());
+		batch.draw(fboRegion, camera.position.x-blurTargetB.getWidth()/2, camera.position.y-blurTargetB.getHeight()/2);
+		
+		batch.setShader(null);
+
+		Renderer.getInstance().render(batch, false);
+		
 		batch.end();
 		
 		super.render(delta);
@@ -259,7 +401,7 @@ public class BusStopScreen extends BaseScreen {
 
 	@Override
 	public void show() {
-		// TODO Auto-generated method stub
+		camera.position.set(0, 600, 0);
 		super.show();
 	}
 

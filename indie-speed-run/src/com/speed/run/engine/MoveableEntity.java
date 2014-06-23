@@ -19,6 +19,14 @@ public class MoveableEntity extends Entity implements OnMoveComplete {
 		return speed;
 	}
 
+	public Vector2 getTarget() {
+		return target;
+	}
+
+	public void setTarget(Vector2 target) {
+		this.target = target;
+	}
+
 	public void setSpeed(float speed) {
 		this.speed = speed;
 	}

@@ -17,9 +17,10 @@ public class Renderer {
 	}
 	
 	private TreeMap<Integer, ArrayList<Entity>> entities;
-	
-	public Renderer() {
+		
+	private Renderer() {
 		entities = new TreeMap<Integer, ArrayList<Entity>>();
+
 	}
 	
 	public void addEntity(Entity e) {
@@ -27,18 +28,14 @@ public class Renderer {
 		entities.get(e.getDepth()).add(e);
 	}
 	
-	public void render(SpriteBatch batch, boolean pause, float alpha) {
+	public void render(SpriteBatch batch, boolean frontRendering) {
 		Iterator<ArrayList<Entity>> it = entities.values().iterator();
 		while (it.hasNext()) {
 			ArrayList<Entity> ls = it.next();
 			for (Entity e: ls) {
-				if (e.getDepth() < Player.getInstance().getDepth()) {
-					float colorCmpt = pause?0.5f:1.0f;
-					batch.setColor(colorCmpt, colorCmpt, colorCmpt, alpha);
-				} else {
-					batch.setColor(1.0f, 1.0f, 1.0f, alpha);
+				if ((frontRendering && e.getDepth() < Player.getInstance().getDepth()) || (!frontRendering && e.getDepth() >= Player.getInstance().getDepth())) {
+					e.draw(batch);
 				}
-				e.draw(batch);
 			}
 		}
 	}

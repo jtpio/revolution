@@ -15,6 +15,8 @@ public class TalkingNpc extends Npc {
 	protected int currentSentence;
 	protected float time;
 	
+	protected boolean speaking = true;
+	
 	public TalkingNpc(String name, LinkedList<Sentence> sentences) {
 		super(name);
 		this.sentences = sentences;
@@ -43,11 +45,21 @@ public class TalkingNpc extends Npc {
 		this.sentences = sentences;
 	}
 
+	public boolean isSpeaking() {
+		return speaking;
+	}
+
+	public void setSpeaking(boolean speaking) {
+		this.speaking = speaking;
+	}
+
 	@Override
 	public void update(float dt) {
 		super.update(dt);
-		time += dt;
 		
+		if (!speaking) return;
+
+		time += dt;
 		if (sentences.size() == 0) return;
 		
 		if (time > sentences.getFirst().getStartTime()) {
@@ -57,6 +69,7 @@ public class TalkingNpc extends Npc {
 		if (time > sentences.getFirst().getStartTime() + sentences.getFirst().getDuration() + Config.PAUSE) {
 			speechBubble.hide();
 			sentences.removeFirst();
+			if (sentences.size() == 0) speaking = false;
 		}
 		
 		speechBubble.setPosition(pos.x, pos.y + Config.BUBBLE_Y_OFFSET);

@@ -20,8 +20,15 @@ public class Dialogs {
 	}
 	
 	public static final String[] jsonFiles = {
+		"data/dialogs/boyfriend_girlfriend.json",
 		"data/dialogs/bros.json",
-		"data/dialogs/homeless.json"
+		"data/dialogs/homeless.json",
+		"data/dialogs/business_guy.json",
+		"data/dialogs/crazy_cat_lady.json",
+		"data/dialogs/girlfriend_boyfriend.json",
+		"data/dialogs/man_hitting_on_girl.json",
+		"data/dialogs/man_wife.json",
+		"data/dialogs/teenz.json"
 	};
 	private ArrayList<Pair> pairs;
 	
@@ -53,7 +60,7 @@ public class Dialogs {
 		JsonValue dialogs = root.get("dialogs");
 		for (int i = 0; i < dialogs.size; i++) {
 			JsonValue v = dialogs.get(i);
-			Sentence s = new Sentence(i * (Config.SENTENCE_DURATION + Config.PAUSE), Config.SENTENCE_DURATION, v.getString(1));
+			Sentence s = new Sentence(Config.DELAY_TALK + i * (Config.SENTENCE_DURATION + Config.PAUSE), Config.SENTENCE_DURATION, v.getString(1));
 			
 			if (v.getInt(0) == 0) firstList.add(s);
 			else secondList.add(s);

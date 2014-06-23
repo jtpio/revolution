@@ -1,0 +1,31 @@
+{
+"n": 2,
+"first": "lady",
+"second": "bro1",
+"dialogs": [
+	[0, "So the guy finds out that"],
+	[0, "she really did love him all this time."],
+	[1, "U-huh..."],
+	[0, "So he runs out into the rain,"],
+	[0, "you know,"],
+	[0, "without his shirt on,"],
+	[0, "to find her."],
+	[0, "It's so sexy and romantic."],
+	[1, "Yeah, he seems like a cool guy."],
+	[0, "So spontaneous and dangerous!"],
+	[0, "Totally."],
+	[0, "So anyway,"],
+	[0, "he goes after her, right,"],
+	[0, "and then they meet up"],
+	[0, "but she had already"],
+	[0, "changed her mind,"],
+	[0, "but then he kisses her"],
+	[0, "and she changes it right back and"],
+	[0, "they just stand there, kissing in the rain."],	
+	[0, "Soooo romantic!"],
+	[1, "It sounds like a really great movie."],
+	[0, "SUCH a great movie!"]
+]
+}
+
+
