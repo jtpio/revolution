@@ -14,6 +14,5 @@ Powered by libGDX
 
 # License
 
-Licensed under Creative Commons: By Attribution-NonCommercial 3.0 Unported.
-
+Licensed under Creative Commons: By Attribution-NonCommercial 3.0 Unported.\s\s
 http://creativecommons.org/licenses/by-nc/3.0/
