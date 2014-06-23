@@ -11,3 +11,8 @@ Powered by libGDX
 * Christian Grimberg - Design, Audio
 * Eric Eneback - Graphics
 * Jeremy Tuloup - Programming
+
+# License
+
+Licensed under Creative Commons: By Attribution-NonCommercial 3.0 Unported
+http://creativecommons.org/licenses/by-nc/3.0/
